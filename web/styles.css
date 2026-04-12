@@ -1028,6 +1028,76 @@ html {
     font-weight: bold;
 }
 
+.arch-list-ol {
+    padding: 0 0 0 24px;
+    margin: 8px 0;
+    list-style: decimal;
+}
+
+.arch-list-ol li {
+    padding: 4px 0;
+    color: var(--text-primary);
+}
+
+.arch-list-ol li::marker {
+    color: var(--accent-primary);
+    font-weight: bold;
+}
+
+.arch-sublist {
+    padding: 0 0 0 20px;
+    margin: 4px 0;
+}
+
+.arch-sublist li {
+    padding: 3px 0;
+    position: relative;
+}
+
+.arch-sublist li::before {
+    content: none;
+}
+
+ul.arch-sublist {
+    list-style: disc;
+}
+
+ul.arch-sublist li::marker {
+    color: var(--accent-primary);
+}
+
+ol.arch-sublist {
+    list-style: decimal;
+}
+
+ol.arch-sublist li::marker {
+    color: var(--accent-primary);
+    font-weight: bold;
+}
+
+.arch-notes a,
+.arch-list a,
+.arch-list-ol a,
+.arch-sublist a {
+    color: var(--accent-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.arch-notes a:visited,
+.arch-list a:visited,
+.arch-list-ol a:visited,
+.arch-sublist a:visited {
+    color: var(--accent-primary);
+}
+
+.arch-notes a:hover,
+.arch-list a:hover,
+.arch-list-ol a:hover,
+.arch-sublist a:hover {
+    opacity: 0.8;
+}
+
 /* 图片放大 Lightbox */
 .lightbox {
     display: none;

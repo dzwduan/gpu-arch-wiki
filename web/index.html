@@ -651,29 +651,67 @@
             <!-- NV 微架构梳理 -->
             <section id="nv-arch-overview" class="content-section active">
                 <h1 class="section-title">NVIDIA 微架构演进</h1>
-                <div class="intro-box">
-                    <p>从 Fermi 到 Ampere，NVIDIA GPU 的 SM（Streaming Multiprocessor）经历了多次重大变革：CUDA Core 的拆分与重组、Tensor Core 的引入、双精度单元的增减、SIMT 执行模型的改进。本文梳理每一代架构的 SM 内部结构和关键变化。</p>
+
+                <h2 class="subsection-title" id="arch-compare">Nvidia GPGPU 微架构演进对比</h2>
+                <div class="matrix-container">
+                    <table class="hardware-matrix">
+                        <thead>
+                            <tr>
+                                <th>uArch</th>
+                                <th>Year</th>
+                                <th>Core</th>
+                                <th>SM(X/M)</th>
+                                <th>GPC</th>
+                                <th>TPC</th>
+                                <th>INT32+FP32</th>
+                                <th>INT32/FP32</th>
+                                <th>INT32</th>
+                                <th>FP32</th>
+                                <th>FP64</th>
+                                <th>Warp.</th>
+                                <th>Disp.</th>
+                                <th>LD/ST</th>
+                                <th>SFU</th>
+                                <th>Tens.Core</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td style="text-align:left;font-weight:600">Fermi</td><td>2010</td><td>GF100</td><td>16</td><td>4</td><td>-</td><td>32</td><td>-</td><td>-</td><td>-</td><td>-</td><td>2</td><td>2</td><td>16</td><td>4</td><td>-</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Kepler</td><td>2012</td><td>GK210</td><td>15</td><td>-</td><td>-</td><td>192</td><td>-</td><td>-</td><td>-</td><td>64</td><td>4</td><td>8</td><td>32</td><td>32</td><td>-</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Maxwell</td><td>2014</td><td>GM204</td><td>16</td><td>4</td><td>-</td><td>128</td><td>-</td><td>-</td><td>-</td><td>-</td><td>4</td><td>8</td><td>32</td><td>32</td><td>-</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Pascal</td><td>2016</td><td>GP100</td><td>60</td><td>6</td><td>5</td><td>64</td><td>-</td><td>-</td><td>-</td><td>32</td><td>2</td><td>4</td><td>16</td><td>16</td><td>-</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Volta</td><td>2017</td><td>GV100</td><td>84</td><td>6</td><td>7</td><td>-</td><td>-</td><td>64</td><td>64</td><td>32</td><td>4</td><td>4</td><td>32</td><td>16</td><td>8 (1th)</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Turing</td><td>2018</td><td>TU102</td><td>72</td><td>6</td><td>6</td><td>-</td><td>-</td><td>64</td><td>64</td><td>-/2</td><td>4</td><td>4</td><td>16</td><td>16</td><td>8 (2th)</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Ampere</td><td>2020</td><td>GA100</td><td>128</td><td>8</td><td>8</td><td>-</td><td>-</td><td>64</td><td>64</td><td>32</td><td>4</td><td>4</td><td>32</td><td>16</td><td>4 (3th)</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Ampere</td><td>2020</td><td>GA102</td><td>84</td><td>7</td><td>6</td><td>-</td><td>64</td><td>-</td><td>64</td><td>-/2</td><td>4</td><td>4</td><td>16</td><td>16</td><td>4 (3th)</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Ada</td><td>2022</td><td>AD102</td><td>144</td><td>12</td><td>6</td><td>-</td><td>64</td><td>-</td><td>64</td><td>-/2</td><td>4</td><td>4</td><td>16</td><td>16</td><td>4 (4th)</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Hopper</td><td>2022</td><td>GH100</td><td>144</td><td>8</td><td>9</td><td>-</td><td>-</td><td>64</td><td>128</td><td>64</td><td>4</td><td>4</td><td>32</td><td>16</td><td>4 (4th)</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Blackwell</td><td>2024</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>4 (5th)</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Rubin</td><td>2026</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>4 (6th)</td></tr>
+                        </tbody>
+                    </table>
                 </div>
 
-                <div class="page-toc">
+                <div class="page-toc" style="margin-top:24px">
                     <h3>目录</h3>
                     <ul>
-                        <li><a href="#arch-fermi">Fermi (2010) - 首个完整 GPU 计算架构</a></li>
-                        <li><a href="#arch-kepler">Kepler (2012) - SMX, 双精度黄金时代</a></li>
-                        <li><a href="#arch-maxwell">Maxwell (2014) - SMM, 能效比优先</a></li>
-                        <li><a href="#arch-pascal">Pascal (2016) - FP16, NVLink</a></li>
-                        <li><a href="#arch-volta">Volta (2017) - V100, Tensor Core 诞生</a></li>
-                        <li><a href="#arch-turing">Turing (2018) - RTX 20 系列, RT Core</a></li>
-                        <li><a href="#arch-ampere">Ampere (2020) - A100 / RTX 30, 稀疏 Tensor Core</a></li>
-                        <li><a href="#arch-ada">Ada Lovelace (2022) - RTX 40 系列, FP8 / DLSS 3</a></li>
-                        <li><a href="#arch-hopper">Hopper (2022) - H100 / H200, Transformer Engine</a></li>
-                        <li><a href="#arch-blackwell">Blackwell (2024) - B100 / B200, FP4 / TMEM</a></li>
-                        <li><a href="#arch-rubin">Rubin (2026 (预计)) - R100, HBM4</a></li>
-                        <li><a href="#arch-compare">SM 结构演进对比表</a></li>
+                        <li><a href="#arch-compare">Nvidia GPGPU 微架构演进对比</a></li>
+                        <li><a href="#arch-fermi">Fermi (2010)</a></li>
+                        <li><a href="#arch-kepler">Kepler (2012)</a></li>
+                        <li><a href="#arch-maxwell">Maxwell (2014)</a></li>
+                        <li><a href="#arch-pascal">Pascal (2016)</a></li>
+                        <li><a href="#arch-volta">Volta (2017)</a></li>
+                        <li><a href="#arch-turing">Turing (2018)</a></li>
+                        <li><a href="#arch-ampere-ga100">Ampere (GA100) (2020)</a></li>
+                        <li><a href="#arch-ampere-ga102">Ampere (GA102) (2020)</a></li>
+                        <li><a href="#arch-ada">Ada Lovelace (2022)</a></li>
+                        <li><a href="#arch-hopper">Hopper (2022)</a></li>
+                        <li><a href="#arch-blackwell">Blackwell (2024)</a></li>
+                        <li><a href="#arch-rubin">Rubin (2026 (预计))</a></li>
                     </ul>
                 </div>
 
-                <div class="arch-timeline">
+                <div class="arch-timeline" style="margin-top:32px">
 
                     <div class="arch-gen" id="arch-fermi">
                         <div class="arch-gen-header">
@@ -685,19 +723,17 @@
                             <div class="arch-text">
                                 <div class="arch-sm-grid">
                                     <div class="arch-sm-item"><span class="sm-value">2</span><span class="sm-label">Warp Scheduler</span></div>
-                                    <div class="arch-sm-item"><span class="sm-value">32</span><span class="sm-label">CUDA Core</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">2</span><span class="sm-label">Dispatch Unit</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">32</span><span class="sm-label">INT32+FP32 Core</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">16</span><span class="sm-label">LD/ST Unit</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">4</span><span class="sm-label">SFU</span></div>
                                 </div>
                                 <div class="arch-notes">
                                     <ul class="arch-list">
                                     <li>Fermi 是 NVIDIA 第一个面向通用计算设计的完整架构。每个 SM 包含 32 个 CUDA Core，分布在 2 条 lane 上（每条 16 个）。</li>
-                                    </ul>
-                                    <ul class="arch-list">
-                                    <li>每个 CUDA Core 内部是 <strong>1 个单精度浮点单元 (FPU) + 1 个整数单元 (ALU)</strong>，可以直接执行 FMA（乘累加）操作。每个 cycle 可跑 16 个双精度 FMA。</li>
-                                    </ul>
-                                    <ul class="arch-list">
-                                    <li>寄存器文件 32768 × 32-bit，底部是 64KB Shared Memory / L1 Cache。</li>
+                                    <li>Fermi 架构把 Tesla 架构的 TPC 改名为 <strong>Graphics Processor Clusters（GPC）</strong>，毕竟 Texture 现在显得不再那么重要。</li>
+                                    <li>Fermi 的 CUDA core 实现了浮点乘加融合（FMA），每个 CUDA Core 内部是 <strong>1 个单精度浮点单元 (FPU) + 1 个整数单元 (ALU)</strong>，可以直接执行 FMA 操作。每个 cycle 可跑 16 个双精度 FMA。Tesla 的浮点并没有完全按照 IEEE754 标准实现，例如不支持 subnormal 浮点，而 Fermi 实现了完整的支持，并且实现了 IEEE754 标准的 rounding mode。</li>
+                                    <li>Fermi 架构把 <strong>Load/Store（LD/ST）</strong>单元独立出来，地址空间也从 32 位扩大到了 64 位。寄存器堆保存了 32768 个 32 位寄存器。</li>
                                     </ul>
                                 </div>
                             </div>
@@ -705,6 +741,26 @@
                                 <img src="images/fermi_sm.png" alt="Fermi 架构图">
                             </div>
                         </div>
+
+                        <h3 class="arch-sub-title">Fermi 存储层次</h3>
+                        <div class="arch-notes" style="margin-top:12px">
+                            <ul class="arch-list">
+                                    <li>Fermi 架构引入了 L1 和 L2 数据缓存。</li>
+                                    <li>Fermi 架构的 Shared Memory 和 L1 数据缓存大小是可配置的，二者共享 64 KB 的空间，可以选择 48KB Shared Memory 加 16KB 的 L1 数据缓存，也可以选择 16KB Shared Memory 和 48KB 的 L1 数据缓存。</li>
+                                    <li>Fermi 架构的 L2 缓存采用的是 <strong>写回（write-back）</strong> 策略。</li>
+                                    </ul>
+                        </div>
+
+
+                        <h3 class="arch-sub-title">Fermi References</h3>
+                        <div class="arch-notes" style="margin-top:12px">
+                            <ol class="arch-list-ol">
+                                    <li><a href="https://www.nvidia.com/content/pdf/fermi_white_papers/nvidia_fermi_compute_architecture_whitepaper.pdf" target="_blank">Fermi: NVIDIA’s Next Generation CUDA Compute Architecture</a></li>
+                                    <li><a href="https://www.nvidia.com/content/PDF/fermi_white_papers/P.Glaskowsky_NVIDIA's_Fermi-The_First_Complete_GPU_Architecture.pdf" target="_blank">NVIDIA’s Fermi: The First Complete GPU Computing Architecture</a></li>
+                                    <li><a href="https://gcne582ug2ks.feishu.cn/wiki/IiCfwVzWKi7JmtkTOI5ciFcknxd" target="_blank">NV微架构演进</a></li>
+                                    </ol>
+                        </div>
+
                     </div>
 
                     <div class="arch-gen" id="arch-kepler">
@@ -712,24 +768,28 @@
                             <h2>Kepler</h2>
                             <span class="paper-tag">2012</span>
                             <span class="paper-tag">SMX</span>
-                            <span class="paper-tag">双精度黄金时代</span>
+                            <span class="paper-tag">FP64</span>
                         </div>
                         <div class="arch-content-row">
                             <div class="arch-text">
                                 <div class="arch-sm-grid">
                                     <div class="arch-sm-item"><span class="sm-value">4</span><span class="sm-label">Warp Scheduler</span></div>
-                                    <div class="arch-sm-item"><span class="sm-value">192</span><span class="sm-label">CUDA Core</span></div>
-                                    <div class="arch-sm-item"><span class="sm-value">64</span><span class="sm-label">FP64 Unit</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">8</span><span class="sm-label">Dispatch Unit</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">192</span><span class="sm-label">INT32+FP32 Core</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">64</span><span class="sm-label">FP64 Unit</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">32</span><span class="sm-label">LD/ST Unit</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">32</span><span class="sm-label">SFU</span></div>
                                 </div>
                                 <div class="arch-notes">
                                     <ul class="arch-list">
-                                    <li>SM 更名为 <strong>SMX</strong>。相比 Fermi 大幅堆料：CUDA Core 从 32 暴增到 192（4 × 3 × 16，每条 lane 仍是 16 个）。</li>
+                                    <li>Kepler 去掉了 TPC/GPC 这一个层级，而是把 SM 做的很大，称为 <strong>SMX</strong>。相比 Fermi 大幅堆料：CUDA Core 从 32 暴增到 192（4 × 3 × 16，每条 lane 仍是 16 个）。</li>
+                                    <li>Kepler 引入 <strong>独立的 64 个双精度运算单元</strong>，不需要通过单精度单元去做双精度运算。这使得 Kepler 的双精度性能远超前后几代。4 个 Warp Scheduler 搭配 8 个 Dispatch Unit（1:2 比例）。</li>
+                                    <li>Kepler 相比 Fermi 架构的主要改进：</li>
+                                    <ul class="arch-sublist">
+                                    <li>Dynamic Parallelism 和 Grid Management Unit：不仅 CPU 可以提交任务到 GPU 执行，GPU 自己也可以提交任务到自己上去执行</li>
+                                    <li>Hyper-Q：允许多个 CPU 核心同时向 GPU 提交任务，把硬件任务队列从 1 增加到了 32 个。每个 CUDA stream 会对应到一个硬件任务队列，因此增加硬件任务队列，可以减少 false dependency。</li>
+                                    <li>GPUDirect：支持 RDMA</li>
                                     </ul>
-                                    <ul class="arch-list">
-                                    <li>最关键的变化：<strong>独立的 64 个双精度运算单元</strong>，不需要通过单精度单元去做双精度运算。这使得 Kepler 的双精度性能远超前后几代。4 个 Warp Scheduler 搭配 8 个 Dispatch Unit（1:2 比例）。</li>
                                     </ul>
                                 </div>
                             </div>
@@ -737,6 +797,24 @@
                                 <img src="images/kepler_sm.png" alt="Kepler 架构图">
                             </div>
                         </div>
+
+                        <h3 class="arch-sub-title">Kepler 存储层次</h3>
+                        <div class="arch-notes" style="margin-top:12px">
+                            <ul class="arch-list">
+                                    <li>Kepler 引入了一个额外的 48KB 只读 Data Cache，用于保存只读的数据，可以提供相比 Shared/L1 cache 更高的性能。</li>
+                                    <li>根据 <a href="https://arxiv.org/pdf/1804.06826.pdf" target="_blank">Dissecting the NVIDIA Volta GPU Architecture via Microbenchmarking</a>，Kepler 架构每个周期每个 SM 可以读取 256 字节的数据，也就是说，每个 LD/ST unit 每周期可以读取 4 字节的数据。</li>
+                                    </ul>
+                        </div>
+
+
+                        <h3 class="arch-sub-title">Kepler References</h3>
+                        <div class="arch-notes" style="margin-top:12px">
+                            <ul class="arch-list">
+                                    <li><a href="https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/tesla-product-literature/NVIDIA-Kepler-GK110-GK210-Architecture-Whitepaper.pdf" target="_blank">NVIDIA’s Next Generation CUDA Compute Architecture: Kepler TM GK110/210</a></li>
+                                    <li><a href="https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/documents/NV-DS-Tesla-KCompute-Arch-May-2012-LR.pdf" target="_blank">NVIDIA® KEPLER GK110 NEXT-GENERATION CUDA® COMPUTE ARCHITECTURE</a></li>
+                                    </ul>
+                        </div>
+
                     </div>
 
                     <div class="arch-gen" id="arch-maxwell">
@@ -750,18 +828,17 @@
                             <div class="arch-text">
                                 <div class="arch-sm-grid">
                                     <div class="arch-sm-item"><span class="sm-value">4</span><span class="sm-label">Warp Scheduler</span></div>
-                                    <div class="arch-sm-item"><span class="sm-value">128</span><span class="sm-label">CUDA Core</span></div>
-                                    <div class="arch-sm-item"><span class="sm-value">0</span><span class="sm-label">FP64 Unit</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">8</span><span class="sm-label">Dispatch Unit</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">128</span><span class="sm-label">INT32+FP32 Core</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">32</span><span class="sm-label">LD/ST Unit</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">32</span><span class="sm-label">SFU</span></div>
                                 </div>
                                 <div class="arch-notes">
                                     <ul class="arch-list">
+                                    <li>虽然 Kepler 把 GPC 层次去掉了，但是 Maxwell 架构又把 GPC 加回来了。</li>
                                     <li>SM 更名为 <strong>SMM</strong>。开始做减法：<strong>移除独立双精度计算单元</strong>，CUDA Core 从 192 精简到 128（4 × 32）。</li>
-                                    </ul>
-                                    <ul class="arch-list">
-                                    <li>工艺提升带来的收益：每个 CUDA Core 性能比 Kepler 提升 <strong>1.4x</strong>，整体能效比提升 <strong>2x</strong>。SMM 采用 4 个 Processing Block，每个 Block 有独立的 Warp Scheduler、Instruction Buffer 和 Register File。</li>
+                                    <li>Maxwell 把计算单元也划分成了四份，<strong>每一份叫做一个 Processing Block（PB）</strong>，每个 Block 有独立的 Warp Scheduler、Instruction Buffer 和 Register File。</li>
+                                    <li>工艺提升带来的收益：每个 CUDA Core 性能比 Kepler 提升 <strong>1.4x</strong>，整体能效比提升 <strong>2x</strong>。</li>
                                     </ul>
                                 </div>
                             </div>
@@ -769,6 +846,25 @@
                                 <img src="images/maxwell_sm.png" alt="Maxwell 架构图">
                             </div>
                         </div>
+
+                        <h3 class="arch-sub-title">Maxwell 存储层次</h3>
+                        <div class="arch-notes" style="margin-top:12px">
+                            <ul class="arch-list">
+                                    <li>Maxwell 架构的 L1 缓存和 Shared Memory 不再共享，Shared Memory 独占 96KB，然后 L1 缓存和 Texture 缓存共享空间。</li>
+                                    <li>根据 <a href="https://arxiv.org/pdf/1804.06826.pdf" target="_blank">Dissecting the NVIDIA Volta GPU Architecture via Microbenchmarking</a>，Maxwell 架构每个周期每个 SM 可以读取 256 字节的数据，也就是说，每个 LD/ST unit 每周期可以读取 4 字节的数据。</li>
+                                    </ul>
+                        </div>
+
+
+                        <h3 class="arch-sub-title">Maxwell References</h3>
+                        <div class="arch-notes" style="margin-top:12px">
+                            <ul class="arch-list">
+                                    <li><a href="https://www.microway.com/download/whitepaper/NVIDIA_Maxwell_GM204_Architecture_Whitepaper.pdf" target="_blank">NVIDIA GeForce GTX 980 Whitepaper</a></li>
+                                    <li><a href="https://developer.download.nvidia.cn/assets/events/GDC15/GEFORCE/Maxwell_Archictecture_GDC15.pdf" target="_blank">New GPU Features of NVIDIA's Maxwell Architecture</a></li>
+                                    <li><a href="https://developer.nvidia.com/blog/5-things-you-should-know-about-new-maxwell-gpu-architecture/" target="_blank">5 Things You Should Know About the New Maxwell GPU Architecture</a></li>
+                                    </ul>
+                        </div>
+
                     </div>
 
                     <div class="arch-gen" id="arch-pascal">
@@ -782,18 +878,20 @@
                             <div class="arch-text">
                                 <div class="arch-sm-grid">
                                     <div class="arch-sm-item"><span class="sm-value">2</span><span class="sm-label">Warp Scheduler</span></div>
-                                    <div class="arch-sm-item"><span class="sm-value">64</span><span class="sm-label">CUDA Core</span></div>
-                                    <div class="arch-sm-item"><span class="sm-value">32</span><span class="sm-label">FP64 Unit</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">4</span><span class="sm-label">Dispatch Unit</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">64</span><span class="sm-label">INT32+FP32 Core</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">32</span><span class="sm-label">FP64 Unit</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">16</span><span class="sm-label">LD/ST Unit</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">16</span><span class="sm-label">SFU</span></div>
                                 </div>
                                 <div class="arch-notes">
-                                    <p>SM 内部进一步精简：2 × 32 = 64 CUDA Core，Warp Scheduler 也缩减为 2 个。但有两个重要变化：</p>
                                     <ul class="arch-list">
+                                    <li>Pascal 架构每个 SM 只有 2 个 PB。</li>
+                                    <li><strong>NVLink</strong>：首次引入 GPU 间高速互联 NVLink 1.0，双向带宽 160 GB/s</li>
+                                    <li>SM 内部进一步精简：2 × 32 = 64 CUDA Core，Warp Scheduler 也缩减为 2 个。</li>
                                     <li><strong>双精度回归</strong>：32 个独立 FP64 单元（2 × 16）</li>
                                     <li><strong>FP16 支持</strong>：CUDA Core 首次支持半精度计算，为后续 AI 加速铺路</li>
-                                    <li><strong>NVLink</strong>：首次引入 GPU 间高速互联</li>
+                                    <li>支持 Compute Preemption，使得 kernel 可以在指令级别做抢占，而不是 thread block 级别，这样就可以让调试器等交互式的任务不会阻碍其他计算任务的进行；在 Kepler 架构中，只有等一个 thread block 的所有 thread 完成，硬件才可以做上下文切换，但是如果中间遇到了调试器的断点，这时候 thread block 并没有完成，那么此时只有调试器可以使用 GPU，其他任务就无法在 GPGPU 上执行</li>
                                     </ul>
                                 </div>
                             </div>
@@ -802,9 +900,29 @@
                             </div>
                         </div>
 
+                        <h3 class="arch-sub-title">Pascal 存储层次</h3>
+                        <div class="arch-notes" style="margin-top:12px">
+                            <ul class="arch-list">
+                                    <li>支持 Unified Memory，使得 CPU 和 GPU 可以共享虚拟地址空间，让数据自动进行迁移。</li>
+                                    <li>8 个 512 位的内存控制器，每个内存控制器附带 512 KB L2 缓存，总共有 4096 KB 的 L2 缓存。</li>
+                                    <li>每两个内存控制器为一组，连接到 4 个 1024 位的 HBM2 内存。</li>
+                                    <li>Pascal 架构每个 SM 有 64 KB 的 Shared memory，并且 SM 的数量比 Maxwell 的两倍还要多，因此实际上是在变相地增加 Shared memory 的数量、容量以及带宽。</li>
+                                    <li>根据 <a href="https://arxiv.org/pdf/1804.06826.pdf" target="_blank">Dissecting the NVIDIA Volta GPU Architecture via Microbenchmarking</a>，Pascal 架构每个周期每个 SM 可以读取 128 字节的数据，也就是说，每个 LD/ST unit 每周期可以读取 8 字节的数据。</li>
+                                    </ul>
+                        </div>
+
+
                         <h3 class="arch-sub-title">Pascal SM 微架构图</h3>
                         <div class="paper-figure" style="margin-top:12px">
                             <img src="images/pascal_sm_arch.png" alt="" style="max-width:700px">
+                        </div>
+
+
+                        <h3 class="arch-sub-title">Pascal References</h3>
+                        <div class="arch-notes" style="margin-top:12px">
+                            <ul class="arch-list">
+                                    <li><a href="https://images.nvidia.cn/content/volta-architecture/pdf/volta-architecture-whitepaper.pdf" target="_blank">NVIDIA Tesla P100 Whitepaper</a></li>
+                                    </ul>
                         </div>
 
                     </div>
@@ -820,26 +938,48 @@
                             <div class="arch-text">
                                 <div class="arch-sm-grid">
                                     <div class="arch-sm-item"><span class="sm-value">4</span><span class="sm-label">Warp Scheduler</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">4</span><span class="sm-label">Dispatch Unit</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">64</span><span class="sm-label">FP32 Core</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">64</span><span class="sm-label">INT32 Core</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">32</span><span class="sm-label">FP64 Core</span></div>
-                                    <div class="arch-sm-item highlight"><span class="sm-value">8</span><span class="sm-label">Tensor Core</span></div>
-                                    <div class="arch-sm-item"><span class="sm-value">32 / 16</span><span class="sm-label">LD/ST / SFU</span></div>
+                                    <div class="arch-sm-item highlight"><span class="sm-value">8 (1st)</span><span class="sm-label">Tensor Core</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">32</span><span class="sm-label">LD/ST Unit</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">16</span><span class="sm-label">SFU</span></div>
                                 </div>
                                 <div class="arch-notes">
-                                    <p><strong>里程碑架构。</strong>三大关键变化：</p>
                                     <ul class="arch-list">
-                                    <li><strong>CUDA Core 拆分</strong>：不再是统一的 FPU+ALU，而是独立的 FP32 Core 和 INT32 Core。优势：<strong>两者可以同时执行</strong>，混合运算吞吐翻倍</li>
-                                    <li><strong>Tensor Core 引入</strong>：每个 SM 8 个（4 × 2），每个 TC 每周期执行 4×4×4 GEMM（FP16 输入，FP32 累加），等效 64 个 FP32 ALU</li>
+                                    <li><strong>里程碑架构。</strong></li>
+                                    <li><strong>Tensor Core 1.0</strong>：每个 SM 8 个（4 × 2），每个 TC 每周期执行 4×4×4 GEMM（FP16 输入，FP32 累加），等效 64 个 FP32 ALU。</li>
+                                    <li><strong>CUDA Core 拆分</strong>：不再是统一的 FPU+ALU，而是独立的 FP32 Core 和 INT32 Core。优势：<strong>两者可以同时执行</strong>，混合运算吞吐翻倍。</li>
                                     <li><strong>独立线程调度</strong>：每个线程拥有独立 PC 和调用栈</li>
+                                    <li>Warp Scheduler 变为 1:1 对应 Dispatch Unit（之前是 1:2），并增加 L0 ICache。</li>
+                                    <li>每个 SM 拆分成 4 个 PB 回归。</li>
+                                    <li>Volta 的 Warp Scheduler 又回到了单发射，一条涉及 32 条线程的指令被发射，那么它需要两个周期来完成，第二个周期的时候，Warp Scheduler 也会同时发射其他指令，从而实现指令级并行。</li>
                                     </ul>
-                                    <p>Warp Scheduler 变为 1:1 对应 Dispatch Unit（之前是 1:2），并增加 L0 ICache。</p>
                                 </div>
                             </div>
                             <div class="arch-figure">
                                 <img src="images/volta_sm.png" alt="Volta 架构图">
                             </div>
                         </div>
+
+                        <h3 class="arch-sub-title">Volta 存储层次</h3>
+                        <div class="arch-notes" style="margin-top:12px">
+                            <ul class="arch-list">
+                                    <li>在 Volta 架构中，L1 Data Cache 和 Shared memory 再次共享。</li>
+                                    <li>引入了 L0 Instruction Cache，每个 Processing Block 内部都有一个。</li>
+                                    <li>8 个 512 位的内存控制器。</li>
+                                    <li>根据 <a href="https://arxiv.org/pdf/1804.06826.pdf" target="_blank">Dissecting the NVIDIA Volta GPU Architecture via Microbenchmarking</a>，Volta 架构每个周期每个 SM 可以读取 256 字节的数据，也就是说，每个 LD/ST unit 每周期可以读取8 字节的数据。</li>
+                                    <li>根据 <a href="https://github.com/te42kyfo/gpu-benches" target="_blank">gpu-benches</a> 实测，每个 SM 每周期只能读取不到 128 字节（14 TB/s，80 个 SM，时钟频率 1530 MHz，每个 SM 每周期读取 114 字节）的数据（V100不是完整GV100核心，拥有 80 个 SM）。</li>
+                                    <li>6144 KB 的 L2 缓存</li>
+                                    <ul class="arch-sublist">
+                                    <li>分为 64 个 L2 slice，每个 slice 是 96 KB 的大小。</li>
+                                    <li>每个 slice 每周期可以读取 32 B 的数据，因此整个 L2 缓存的读带宽是 2048 字节每周期。</li>
+                                    <li>L2 缓存工作在和 SM 同一个频率下，按 1530 MHz 频率来算，L2 缓存带宽是 3.133 TB/s，V100 的内存带宽是 0.9 TB/s，每个 SM 每个周期可以分到的 L2 带宽是 25.6 字节。</li>
+                                    </ul>
+                                    </ul>
+                        </div>
+
 
                         <h3 class="arch-sub-title">Volta SIMT 改进：独立线程调度</h3>
                         <div class="arch-content-row">
@@ -856,6 +996,15 @@
                             <p>Pascal 及之前，一个 Warp 遇到分支时两侧只能串行执行。Volta 将 PC 和调用栈设计为每个线程独立，分支内的指令可以在更细的粒度上混合调度，并支持 <code>__syncwarp()</code> 显式同步。</p>
                         </div>
 
+
+                        <h3 class="arch-sub-title">Volta References</h3>
+                        <div class="arch-notes" style="margin-top:12px">
+                            <ul class="arch-list">
+                                    <li><a href="https://docs.nvidia.com/cuda/volta-tuning-guide/index.html" target="_blank">Tuning CUDA Applications for Volta</a></li>
+                                    <li><a href="https://old.hotchips.org/wp-content/uploads/hc_archives/hc29/HC29.21-Monday-Pub/HC29.21.10-GPU-Gaming-Pub/HC29.21.132-Volta-Choquette-NVIDIA-Final3.pdf" target="_blank">VOLTA: PROGRAMMABILITY AND PERFORMANCE</a></li>
+                                    </ul>
+                        </div>
+
                     </div>
 
                     <div class="arch-gen" id="arch-turing">
@@ -869,20 +1018,18 @@
                             <div class="arch-text">
                                 <div class="arch-sm-grid">
                                     <div class="arch-sm-item"><span class="sm-value">4</span><span class="sm-label">Warp Scheduler</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">4</span><span class="sm-label">Dispatch Unit</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">64</span><span class="sm-label">FP32 Core</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">64</span><span class="sm-label">INT32 Core</span></div>
-                                    <div class="arch-sm-item highlight"><span class="sm-value">8</span><span class="sm-label">Tensor Core</span></div>
-                                    <div class="arch-sm-item"><span class="sm-value">16 / 16</span><span class="sm-label">LD/ST / SFU</span></div>
+                                    <div class="arch-sm-item highlight"><span class="sm-value">8 (2nd)</span><span class="sm-label">Tensor Core</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">16</span><span class="sm-label">LD/ST Unit</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">16</span><span class="sm-label">SFU</span></div>
                                 </div>
                                 <div class="arch-notes">
                                     <ul class="arch-list">
-                                    <li>最大改动是引入 <strong>RT Core</strong>（光线追踪加速单元）。SM 内计算单元与 Volta 类似，每个 SM 含 4 个 Processing Block：</li>
-                                    </ul>
-                                    <ul class="arch-list">
-                                    <li>每个 Processing Block：1 Warp Scheduler + 1 Dispatch Unit + 16 FP32 + 16 INT32 + <strong>2 Tensor Core</strong> + 4 LD/ST + 4 SFU</li>
-                                    </ul>
-                                    <ul class="arch-list">
-                                    <li>Tensor Core 第二代：在 Volta 基础上<strong>新增 INT8 和 INT4 支持</strong>，开始覆盖推理量化场景。</li>
+                                    <li><strong>Tensor Core 2.0</strong>：在 Volta 基础上<strong>新增 INT8 和 INT4 支持</strong>，开始覆盖推理量化场景。</li>
+                                    <li>引入 <strong>RT Core</strong>（光线追踪加速单元）。</li>
+                                    <li>SM 内计算单元与 Volta 类似，每个 SM 含 4 个 Processing Block。</li>
                                     </ul>
                                 </div>
                             </div>
@@ -891,53 +1038,153 @@
                             </div>
                         </div>
 
+                        <h3 class="arch-sub-title">Turing 存储层次</h3>
+                        <div class="arch-notes" style="margin-top:12px">
+                            <ul class="arch-list">
+                                    <li>12 个 32-bit GDDR6 memory controller</li>
+                                    <li>Turing 架构的每 TPC 的 L1 带宽是 Pascal 架构的两倍。</li>
+                                    </ul>
+                        </div>
+
+
                         <h3 class="arch-sub-title">Turing SM 微架构图</h3>
                         <div class="paper-figure" style="margin-top:12px">
                             <img src="images/turing_sm_arch.png" alt="" style="max-width:700px">
                         </div>
 
+
+                        <h3 class="arch-sub-title">Turing References</h3>
+                        <div class="arch-notes" style="margin-top:12px">
+                            <ul class="arch-list">
+                                    <li><a href="https://images.nvidia.cn/aem-dam/en-zz/Solutions/design-visualization/technologies/turing-architecture/NVIDIA-Turing-Architecture-Whitepaper.pdf" target="_blank">NVIDIA TURING GPU ARCHITECTURE</a></li>
+                                    <li><a href="https://old.hotchips.org/hc31/HC31_2.12_NVIDIA_final.pdf" target="_blank">RTX ON – THE NVIDIA TURING GPU</a></li>
+                                    </ul>
+                        </div>
+
                     </div>
 
-                    <div class="arch-gen" id="arch-ampere">
+                    <div class="arch-gen" id="arch-ampere-ga100">
                         <div class="arch-gen-header">
-                            <h2>Ampere</h2>
+                            <h2>Ampere (GA100)</h2>
                             <span class="paper-tag">2020</span>
-                            <span class="paper-tag">A100 / RTX 30</span>
+                            <span class="paper-tag">A100</span>
                             <span class="paper-tag">稀疏 Tensor Core</span>
                         </div>
                         <div class="arch-content-row">
                             <div class="arch-text">
                                 <div class="arch-sm-grid">
                                     <div class="arch-sm-item"><span class="sm-value">4</span><span class="sm-label">Warp Scheduler</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">4</span><span class="sm-label">Dispatch Unit</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">64</span><span class="sm-label">FP32 Core</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">64</span><span class="sm-label">INT32 Core</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">32</span><span class="sm-label">FP64 Core</span></div>
-                                    <div class="arch-sm-item highlight"><span class="sm-value">4</span><span class="sm-label">Tensor Core</span></div>
-                                    <div class="arch-sm-item"><span class="sm-value">32 / 16</span><span class="sm-label">LD/ST / SFU</span></div>
+                                    <div class="arch-sm-item highlight"><span class="sm-value">4 (3rd)</span><span class="sm-label">Tensor Core</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">32</span><span class="sm-label">LD/ST Unit</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">16</span><span class="sm-label">SFU</span></div>
                                 </div>
                                 <div class="arch-notes">
                                     <ul class="arch-list">
-                                    <li>每个 Processing Block：1 Warp Scheduler + 1 Dispatch Unit + 16 FP32 + 16 INT32 + 8 FP64 + <strong>1 Tensor Core</strong> + 8 LD/ST + 4 SFU</li>
+                                    <li>4 个 PB。</li>
+                                    <li><strong>Tensor Core 3.0</strong> </li>
+                                    <ul class="arch-sublist">
+                                    <li>数量从 8 减半到 4，但<strong>每个吞吐量翻 4 倍</strong>，总吞吐翻倍。</li>
+                                    <li>数据类型大幅扩展：FP16、BF16、TF32、FP64、INT8、INT4、Binary。</li>
                                     </ul>
-                                    <ul class="arch-list">
-                                    <li>Tensor Core 数量从 8 减半到 4，但<strong>每个吞吐量翻 4 倍</strong>，总吞吐翻倍。数据类型大幅扩展：FP16、BF16、TF32、FP64、INT8、INT4、Binary。</li>
                                     </ul>
                                 </div>
                             </div>
                             <div class="arch-figure">
-                                <img src="images/ampere_sm.png" alt="Ampere 架构图">
+                                <img src="images/ampere_sm.png" alt="Ampere (GA100) 架构图">
                             </div>
                         </div>
 
-                        <h3 class="arch-sub-title">Ampere GA 102 SM 微架构图</h3>
+                        <h3 class="arch-sub-title">Ampere (GA100) 存储层次</h3>
+                        <div class="arch-notes" style="margin-top:12px">
+                            <ul class="arch-list">
+                                    <li>6 个 HBM2 stack，对应 12 个 512-bit memory controller。</li>
+                                    <li>每个 SM 的 L1 Data Cache/Shared Memory 总量增加到了 192 KB。</li>
+                                    <li>A100 GPU 有 40 MB 的 L2 缓存，分为两个 partition。</li>
+                                    <li>每个 partition 有 40 个 L2 slice，每个 slice 是 512 KB 的大小。</li>
+                                    <li>每 8 个 L2 slice 对应一个 memory controller</li>
+                                    <li>每个 slice 每周期可以读取 64B 的数据，因此整个 L2 缓存的读带宽是 5120 字节每周期</li>
+                                    <li>L2 缓存工作在和 SM 同一个频率下，按 1410 MHz 频率来算，L2 缓存带宽是 7.219 TB/s，A100 的内存带宽是 1.555 TB/s，</li>
+                                    <li>每个 SM 每个周期可以分到的 L2 带宽是 47.4 字节</li>
+                                    <li>根据 <a href="https://github.com/te42kyfo/gpu-benches" target="_blank">gpu-benches</a> 实测，每个 SM 每周期只能读取不到 128 字节（19 TB/s，108 个 SM，时钟频率 1410 MHz，每个 SM 每周期读取 125 字节）的数据。</li>
+                                    <li>A100 GPU 有 108 个 SM（不是完整的GA100），一共 432 个 Tensor Core，每个 Tensor Core 每周期可以进行 256 个 FP16 FMA 计算，SM 频率 1410 MHz，因此 A100 的 FP16 Tensor Core 峰值性能是 432 * 256 FLOPS * 2 * 1410 MHz = 312 TFLOPS。</li>
+                                    </ul>
+                        </div>
+
+
+                        <h3 class="arch-sub-title">Ampere (GA100) A100 vs V100 性能提升</h3>
+                        <div class="paper-figure" style="margin-top:12px">
+                            <img src="images/a100_vs_v100.png" alt="" style="max-width:700px">
+                        </div>
+
+
+                        <h3 class="arch-sub-title">Ampere (GA100) References</h3>
+                        <div class="arch-notes" style="margin-top:12px">
+                            <ul class="arch-list">
+                                    <li><a href="https://images.nvidia.cn/aem-dam/en-zz/Solutions/data-center/nvidia-ampere-architecture-whitepaper.pdf" target="_blank">NVIDIA A100 Tensor Core GPU Architecture</a></li>
+                                    <li><a href="https://hc32.hotchips.org/assets/program/conference/day1/HotChips2020_GPU_NVIDIA_Choquette_v01.pdf" target="_blank">NVIDIA A100 GPU: PERFORMANCE & INNOVATION FOR GPU COMPUTING</a></li>
+                                    <li><a href="https://ieeexplore.ieee.org/abstract/document/9365803" target="_blank">The A100 Datacenter GPU and Ampere Architecture</a></li>
+                                    <li><a href="https://ieeexplore.ieee.org/abstract/document/9926299/" target="_blank">Demystifying the Nvidia Ampere Architecture through Microbenchmarking and Instruction-level Analysis</a></li>
+                                    </ul>
+                        </div>
+
+                    </div>
+
+                    <div class="arch-gen" id="arch-ampere-ga102">
+                        <div class="arch-gen-header">
+                            <h2>Ampere (GA102)</h2>
+                            <span class="paper-tag">2020</span>
+                            <span class="paper-tag">RTX 30</span>
+                        </div>
+                        <div class="arch-content-row">
+                            <div class="arch-text">
+                                <div class="arch-sm-grid">
+                                    <div class="arch-sm-item"><span class="sm-value">4</span><span class="sm-label">Warp Scheduler</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">4</span><span class="sm-label">Dispatch Unit</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">64</span><span class="sm-label">FP32 Core</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">64</span><span class="sm-label">INT32/FP32 Core</span></div>
+                                    <div class="arch-sm-item highlight"><span class="sm-value">4 (3rd)</span><span class="sm-label">Tensor Core</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">16</span><span class="sm-label">LD/ST Unit</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">16</span><span class="sm-label">SFU</span></div>
+                                </div>
+                                <div class="arch-notes">
+                                    <ul class="arch-list">
+                                    <li>4 个 PB。</li>
+                                    <li>出现了 FP32/INT32 混合的 core，使得 FP32 峰值性能翻倍，但是这个峰值也更难达到，因为达到峰值意味着不用到 FP32/INT32 core 的 INT32 部分。</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="arch-figure">
+                                <img src="images/a-ga102_sm.png" alt="Ampere (GA102) 架构图">
+                            </div>
+                        </div>
+
+                        <h3 class="arch-sub-title">Ampere (GA102) 存储层次</h3>
+                        <div class="arch-notes" style="margin-top:12px">
+                            <ul class="arch-list">
+                                    <li>12 个 32-bit memory controller，一共 384 位。</li>
+                                    <li>12 组 512KB 的 L2 缓存，每组对应一个内存控制器，L2 一共是 6144 KB。</li>
+                                    <li>GA102 的 shared memory 带宽是每个 SM 每个时钟 128 字节，而 Turing 架构的这个值是 64。</li>
+                                    <li>GeForce RTX 3080 (GA102) 的每 SM L1 带宽是 219 GB/s（一个 SM 有 16 个 LD/ST unit，每个 LD/ST unit 每个周期读取 8B 的数据，所以带宽是 219 GB/s）。</li>
+                                    <li>GeForce RTX 2080 Super (TU104) 的每 SM L1 带宽是 116 GB/s（每个 SM 有 16 个 LD/ST unit，每个 LD/ST unit 每个周期读取 4B 的数据，带宽是 116 GB/s）。</li>
+                                    </ul>
+                        </div>
+
+
+                        <h3 class="arch-sub-title">Ampere (GA102) SM 微架构图</h3>
                         <div class="paper-figure" style="margin-top:12px">
                             <img src="images/GA102_sm.png" alt="" style="max-width:700px">
                         </div>
 
 
-                        <h3 class="arch-sub-title">Ampere A100 vs V100 性能提升</h3>
-                        <div class="paper-figure" style="margin-top:12px">
-                            <img src="images/a100_vs_v100.png" alt="" style="max-width:700px">
+                        <h3 class="arch-sub-title">Ampere (GA102) References</h3>
+                        <div class="arch-notes" style="margin-top:12px">
+                            <ul class="arch-list">
+                                    <li><a href="https://www.nvidia.com/content/PDF/nvidia-ampere-ga-102-gpu-architecture-whitepaper-v2.pdf" target="_blank">NVIDIA AMPERE GA102 GPU ARCHITECTURE</a></li>
+                                    </ul>
                         </div>
 
                     </div>
@@ -953,29 +1200,21 @@
                             <div class="arch-text">
                                 <div class="arch-sm-grid">
                                     <div class="arch-sm-item"><span class="sm-value">4</span><span class="sm-label">Warp Scheduler</span></div>
-                                    <div class="arch-sm-item"><span class="sm-value">128</span><span class="sm-label">FP32 Core</span></div>
-                                    <div class="arch-sm-item"><span class="sm-value">64</span><span class="sm-label">INT32 Core</span></div>
-                                    <div class="arch-sm-item highlight"><span class="sm-value">4</span><span class="sm-label">Tensor Core (4th)</span></div>
-                                    <div class="arch-sm-item"><span class="sm-value">2</span><span class="sm-label">FP64 Core</span></div>
-                                    <div class="arch-sm-item"><span class="sm-value">32 / 16</span><span class="sm-label">LD/ST / SFU</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">4</span><span class="sm-label">Dispatch Unit</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">64</span><span class="sm-label">FP32 Core</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">64</span><span class="sm-label">INT32/FP32 Core</span></div>
+                                    <div class="arch-sm-item highlight"><span class="sm-value">4 (4th)</span><span class="sm-label">Tensor Core</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">16</span><span class="sm-label">LD/ST Unit</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">16</span><span class="sm-label">SFU</span></div>
                                 </div>
                                 <div class="arch-notes">
                                     <p><strong>消费级旗舰。</strong>延续 Ampere 的双数据通路（64 专用 FP32 + 64 Flex FP32/INT32），合计 128 FP32 Core。TSMC 4N 工艺。</p>
                                     <ul class="arch-list">
-                                    <li><strong>第 4 代 Tensor Core：</strong>新增 FP8（E4M3 / E5M2）支持，搭载 Hopper 的 Transformer Engine 技术。吞吐量相比 Ampere 再翻倍。</li>
-                                    </ul>
-                                    <ul class="arch-list">
+                                    <li><strong>Tensor Core 4.0：</strong>新增 FP8（E4M3 / E5M2）支持，搭载 Hopper 的 Transformer Engine 技术。吞吐量相比 Ampere 再翻倍。</li>
                                     <li><strong>第 3 代 RT Core：</strong>新增 Opacity Micro-Map（OMM）和 Displaced Micro-Mesh Engine，光追性能 2x。</li>
-                                    </ul>
-                                    <ul class="arch-list">
-                                    <li><strong>L2 缓存大幅扩容：</strong>AD102 达 96MB（Ampere GA102 仅 6MB，16x 增长），显著减少显存访问。</li>
-                                    </ul>
-                                    <ul class="arch-list">
                                     <li>支持 DLSS 3（帧生成）、Shader Execution Reordering（SER，光追调度优化）。</li>
-                                    </ul>
-                                    <ul class="arch-list">
-                                    <li><strong>AD102</strong>：144 SM，18,432 FP32 Core，576 TC。</li>
-                                    <li><strong>RTX 4090</strong>：128 SM，16,384 FP32 Core。</li>
+                                    <li><strong>AD102</strong>：144 SM。</li>
+                                    <li><strong>RTX 4090</strong>：128 SM。</li>
                                     </ul>
                                 </div>
                             </div>
@@ -983,6 +1222,23 @@
                                 <img src="images/ada_sm.png" alt="Ada Lovelace 架构图">
                             </div>
                         </div>
+
+                        <h3 class="arch-sub-title">Ada Lovelace 存储层次</h3>
+                        <div class="arch-notes" style="margin-top:12px">
+                            <ul class="arch-list">
+                                    <li>12 个 32-bit memory controller，一共 384 位。</li>
+                                    <li><strong>L2 缓存大幅扩容：</strong>，AD102 达 96MB（Ampere GA102 仅 6MB，16x 增长），显著减少显存访问。</li>
+                                    </ul>
+                        </div>
+
+
+                        <h3 class="arch-sub-title">Ada Lovelace References</h3>
+                        <div class="arch-notes" style="margin-top:12px">
+                            <ul class="arch-list">
+                                    <li><a href="https://images.nvidia.cn/aem-dam/Solutions/Data-Center/l4/nvidia-ada-gpu-architecture-whitepaper-v2.1.pdf" target="_blank">NVIDIA ADA GPU ARCHITECTURE</a></li>
+                                    </ul>
+                        </div>
+
                     </div>
 
                     <div class="arch-gen" id="arch-hopper">
@@ -996,33 +1252,24 @@
                             <div class="arch-text">
                                 <div class="arch-sm-grid">
                                     <div class="arch-sm-item"><span class="sm-value">4</span><span class="sm-label">Warp Scheduler</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">4</span><span class="sm-label">Dispatch Unit</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">128</span><span class="sm-label">FP32 Core</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">64</span><span class="sm-label">INT32 Core</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">64</span><span class="sm-label">FP64 Core</span></div>
-                                    <div class="arch-sm-item highlight"><span class="sm-value">4</span><span class="sm-label">Tensor Core (4th)</span></div>
-                                    <div class="arch-sm-item"><span class="sm-value">32 / 16</span><span class="sm-label">LD/ST / SFU</span></div>
+                                    <div class="arch-sm-item highlight"><span class="sm-value">4 (4th)</span><span class="sm-label">Tensor Core</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">32</span><span class="sm-label">LD/ST Unit</span></div>
+                                    <div class="arch-sm-item"><span class="sm-value">16</span><span class="sm-label">SFU</span></div>
                                 </div>
                                 <div class="arch-notes">
-                                    <p><strong>大模型时代的数据中心旗舰。</strong>FP64 Core 翻倍至 64（vs Ampere 32），Shared Memory + L1 扩大至 256KB。</p>
+                                    <p><strong>大模型时代的数据中心旗舰。</strong></p>
                                     <ul class="arch-list">
-                                    <li><strong>第 4 代 Tensor Core：</strong>原生 FP8 支持（E4M3 / E5M2），引入 <code>wgmma</code>（Warp Group MMA）指令，128 线程协作完成矩阵运算。FP16 吞吐 729 TFLOPS，FP8 达 1,448 TFLOPS（H800）。</li>
-                                    </ul>
-                                    <ul class="arch-list">
+                                    <li>8 个 GPC，66 个 TPC，每个 TPC 有两个 SM；一共 132 个 SM。（H100 SXM5 参数）</li>
+                                    <li><strong>Tensor Core 4.0：</strong>原生 FP8 支持（E4M3 / E5M2），引入 <code>wgmma</code>（Warp Group MMA）指令，128 线程协作完成矩阵运算。FP16 吞吐 729 TFLOPS，FP8 达 1,448 TFLOPS（H800）。</li>
                                     <li><strong>Transformer Engine：</strong>硬件动态精度选择，每层自动在 FP8 和 FP16 之间切换，训练精度不损失。</li>
-                                    </ul>
-                                    <ul class="arch-list">
                                     <li><strong>Thread Block Cluster：</strong>跨 SM 的线程块协作原语。</li>
-                                    </ul>
-                                    <ul class="arch-list">
                                     <li><strong>Distributed Shared Memory (DSMEM)：</strong>SM 间可直接访问彼此的 Shared Memory，延迟 180 cycles，带宽 3.27 TB/s。</li>
-                                    </ul>
-                                    <ul class="arch-list">
                                     <li><strong>Tensor Memory Accelerator (TMA)：</strong>异步 1D-5D 张量搬运，解放计算线程。</li>
-                                    </ul>
-                                    <ul class="arch-list">
                                     <li><strong>DPX 指令集：</strong>动态规划算法加速（Smith-Waterman 等），最高 13x 提速。</li>
-                                    </ul>
-                                    <ul class="arch-list">
                                     <li><strong>H100 SXM5</strong>：132 SM，16,896 FP32 Core，528 TC，80GB HBM3（3 TB/s），50MB L2，800 亿晶体管，TSMC N4。</li>
                                     </ul>
                                 </div>
@@ -1032,9 +1279,29 @@
                             </div>
                         </div>
 
+                        <h3 class="arch-sub-title">Hopper 存储层次</h3>
+                        <div class="arch-notes" style="margin-top:12px">
+                            <ul class="arch-list">
+                                    <li>Shared Memory + L1 扩大至 256KB。</li>
+                                    <li>HBM3 DRAM，5 个 stack，10 个 512-bit memory controller，总共 80 GB 容量。（H100 SXM5 参数）</li>
+                                    <li>完整版的 GH100 芯片有 60MB 的 L2 缓存，H100 有 50MB 的 L2 缓存。</li>
+                                    <li>根据 <a href="https://github.com/te42kyfo/gpu-benches" target="_blank">gpu-benches</a> 实测，每个 SM 每周期只能读取略多于 128 字节（25 TB/s，114 个 SM，时钟频率 1620 MHz，每个 SM 每周期读取 135 字节）的数据。</li>
+                                    </ul>
+                        </div>
+
+
                         <h3 class="arch-sub-title">Hopper CUDA Kernel</h3>
                         <div class="arch-notes" style="margin-top:12px">
-                            <p>CUDA Kernel 之前是三个层次：Grid、Thread Block 和 Thread，分别对应整个 GPU、SM 和 CUDA Core，而这一代引入了 Thread Block Cluster 的层次，变成了四个层次：Grid、Thread Block Cluster、Thread Block 和 Thread。（H100 introduces a new Thread Block Cluster architecture that exposes control of locality at a granularity larger than a single Thread Block on a single SM.）其中 Thread Block 对应 GPC，每个 GPC 有多个 TPC，每个 TPC 有多个 SM。（The Clusters in H100 run concurrently across SMs within a GPC. A GPC is a group of SMs in the hardware hierarchy that are always physically close together.）</p>
+                            <p>CUDA Kernel 之前是三个层次：Grid、Thread Block 和 Thread，分别对应整个 GPU、SM 和 CUDA Core，而这一代引入了 Thread Block Cluster 的层次，变成了四个层次：Grid、Thread Block Cluster、Thread Block 和 Thread。其中 Thread Block 对应 GPC，每个 GPC 有多个 TPC，每个 TPC 有多个 SM。</p>
+                        </div>
+
+
+                        <h3 class="arch-sub-title">Hopper References</h3>
+                        <div class="arch-notes" style="margin-top:12px">
+                            <ul class="arch-list">
+                                    <li><a href="https://resources.nvidia.com/en-us-tensor-core" target="_blank">NVIDIA H100 Tensor Core GPU Architecture</a></li>
+                                    <li><a href="https://hc34.hotchips.org/assets/program/conference/day1/GPU%20HPC/HC2022.NVIDIA.Choquette.vfinal01.pdf" target="_blank">NVIDIA HOPPER GPU: SCALING PERFORMANCE</a></li>
+                                    </ul>
                         </div>
 
                     </div>
@@ -1049,10 +1316,7 @@
                         <div class="arch-content-row">
                             <div class="arch-text">
                                 <div class="arch-sm-grid">
-                                    <div class="arch-sm-item"><span class="sm-value">4</span><span class="sm-label">Warp Scheduler</span></div>
-                                    <div class="arch-sm-item"><span class="sm-value">128</span><span class="sm-label">FP32 Core</span></div>
-                                    <div class="arch-sm-item"><span class="sm-value">128</span><span class="sm-label">INT32 (统一)</span></div>
-                                    <div class="arch-sm-item highlight"><span class="sm-value">4</span><span class="sm-label">Tensor Core (5th)</span></div>
+                                    <div class="arch-sm-item highlight"><span class="sm-value">4 (5th)</span><span class="sm-label">Tensor Core</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">256KB</span><span class="sm-label">TMEM (新增)</span></div>
                                     <div class="arch-sm-item"><span class="sm-value">228KB</span><span class="sm-label">SMEM + L1</span></div>
                                 </div>
@@ -1091,12 +1355,7 @@
                         <div class="arch-content-row">
                             <div class="arch-text">
                                 <div class="arch-sm-grid">
-                                    <div class="arch-sm-item"><span class="sm-value">224</span><span class="sm-label">SM (预计)</span></div>
-                                    <div class="arch-sm-item highlight"><span class="sm-value">6th</span><span class="sm-label">Tensor Core 代</span></div>
-                                    <div class="arch-sm-item"><span class="sm-value">3360 亿</span><span class="sm-label">晶体管</span></div>
-                                    <div class="arch-sm-item"><span class="sm-value">288GB</span><span class="sm-label">HBM4 (8 Stack)</span></div>
-                                    <div class="arch-sm-item"><span class="sm-value">22 TB/s</span><span class="sm-label">显存带宽</span></div>
-                                    <div class="arch-sm-item"><span class="sm-value">50 PF</span><span class="sm-label">FP4 算力</span></div>
+                                    <div class="arch-sm-item highlight"><span class="sm-value">4 (6th)</span><span class="sm-label">Tensor Core</span></div>
                                 </div>
                                 <div class="arch-notes">
                                     <ul class="arch-list">
@@ -1126,40 +1385,6 @@
                         </div>
                     </div>
 
-                </div>
-
-                <h2 class="subsection-title" id="arch-compare">SM 结构演进对比</h2>
-                <div class="matrix-container">
-                    <table class="hardware-matrix">
-                        <thead>
-                            <tr>
-                                <th>架构</th>
-                                <th>年份</th>
-                                <th>SM 名称</th>
-                                <th>CUDA/FP32</th>
-                                <th>INT32</th>
-                                <th>FP64</th>
-                                <th>Tensor Core</th>
-                                <th>Warp Sched.</th>
-                                <th>Dispatch</th>
-                                <th>LD/ST</th>
-                                <th>SFU</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td style="text-align:left;font-weight:600">Fermi</td><td>2010</td><td>SM</td><td>32</td><td>共享</td><td>共享</td><td>-</td><td>2</td><td>2</td><td>16</td><td>4</td></tr>
-                            <tr><td style="text-align:left;font-weight:600">Kepler</td><td>2012</td><td>SMX</td><td>192</td><td>共享</td><td>64</td><td>-</td><td>4</td><td>8</td><td>32</td><td>32</td></tr>
-                            <tr><td style="text-align:left;font-weight:600">Maxwell</td><td>2014</td><td>SMM</td><td>128</td><td>共享</td><td>-</td><td>-</td><td>4</td><td>8</td><td>32</td><td>32</td></tr>
-                            <tr><td style="text-align:left;font-weight:600">Pascal</td><td>2016</td><td>SM</td><td>64</td><td>共享</td><td>32</td><td>-</td><td>2</td><td>4</td><td>16</td><td>16</td></tr>
-                            <tr><td style="text-align:left;font-weight:600">Volta</td><td>2017</td><td>SM</td><td>64</td><td>64</td><td>32</td><td>8 (1th)</td><td>4</td><td>4</td><td>32</td><td>16</td></tr>
-                            <tr><td style="text-align:left;font-weight:600">Turing</td><td>2018</td><td>SM</td><td>64</td><td>64</td><td>-</td><td>8 (2th)</td><td>4</td><td>4</td><td>16</td><td>16</td></tr>
-                            <tr><td style="text-align:left;font-weight:600">Ampere</td><td>2020</td><td>SM</td><td>64</td><td>64</td><td>32</td><td>4 (3th)</td><td>4</td><td>4</td><td>32</td><td>16</td></tr>
-                            <tr><td style="text-align:left;font-weight:600">Ada</td><td>2022</td><td>SM</td><td>128</td><td>64</td><td>2</td><td>4 (4th)</td><td>4</td><td>4</td><td>32</td><td>16</td></tr>
-                            <tr><td style="text-align:left;font-weight:600">Hopper</td><td>2022</td><td>SM</td><td>128</td><td>64</td><td>64</td><td>4 (4th)</td><td>4</td><td>4</td><td>32</td><td>16</td></tr>
-                            <tr><td style="text-align:left;font-weight:600">Blackwell</td><td>2024</td><td>SM</td><td>128</td><td>128</td><td>TBD</td><td>4 (5th)</td><td>4</td><td>4</td><td>~32</td><td>~16</td></tr>
-                            <tr><td style="text-align:left;font-weight:600">Rubin</td><td>2026</td><td>SM</td><td>~128+</td><td>TBD</td><td>TBD</td><td>TBD (6th)</td><td>TBD</td><td>TBD</td><td>TBD</td><td>TBD</td></tr>
-                        </tbody>
-                    </table>
                 </div>
             
             </section>

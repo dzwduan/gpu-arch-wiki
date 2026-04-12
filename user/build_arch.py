@@ -18,11 +18,34 @@ DST_IMAGES = ROOT / 'web' / 'images'
 # ── Markdown 解析 ──────────────────────────────────────────
 
 def parse_md(text):
-    """解析整个 md 文件，返回 (architectures, compare_table_md)"""
-    # 分离对比表（## SM 结构演进对比）
-    compare_split = re.split(r'^## SM 结构演进对比\s*$', text, flags=re.MULTILINE)
-    arch_text = compare_split[0]
-    compare_md = compare_split[1].strip() if len(compare_split) > 1 else ''
+    """解析整个 md 文件，返回 (architectures, compare_table_md, compare_title)"""
+    # 提取对比表标题
+    title_match = re.search(r'^## (.+)', text, flags=re.MULTILINE)
+    compare_title = title_match.group(1).strip() if title_match else '微架构演进对比'
+    # 分离对比表
+    compare_split = re.split(r'^## .+\s*$', text, maxsplit=1, flags=re.MULTILINE)
+    if len(compare_split) > 1:
+        # 表格在前面：compare_split[0] 为空或空白，[1] 包含表格 + 架构内容
+        # 表格在后面：compare_split[0] 包含架构内容，[1] 包含表格
+        before = compare_split[0].strip()
+        after = compare_split[1].strip()
+        if not before:
+            # 表格在最前面，架构内容在后面
+            # 从 after 中分离表格和架构块（第一个 --- 开头的 frontmatter）
+            fm_match = re.search(r'\n---\n\n---\nid:', after)
+            if fm_match:
+                compare_md = after[:fm_match.start()].strip()
+                arch_text = after[fm_match.start():].strip()
+            else:
+                compare_md = after
+                arch_text = ''
+        else:
+            # 表格在末尾（原有逻辑）
+            arch_text = before
+            compare_md = after
+    else:
+        arch_text = text
+        compare_md = ''
 
     # 找到所有 frontmatter 块：每个以 ---\nid: ... 开头
     # 用正则找到每个 --- 开头的 frontmatter 位置
@@ -40,7 +63,7 @@ def parse_md(text):
         if arch:
             architectures.append(arch)
 
-    return architectures, compare_md
+    return architectures, compare_md, compare_title
 
 
 def parse_arch_block(block):
@@ -81,9 +104,11 @@ def parse_arch_block(block):
 # ── Markdown → HTML 转换 ────────────────────────────────────
 
 def inline_md(text):
-    """行内 markdown：**粗体**, `code`"""
+    """行内 markdown：**粗体**, `code`, [链接](url), 裸 URL"""
     text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
     text = re.sub(r'`([^`]+)`', r'<code>\1</code>', text)
+    text = re.sub(r'\[([^\]]+)\]\((https?://[^)]+)\)', r'<a href="\2" target="_blank">\1</a>', text)
+    text = re.sub(r'(?<!["\'>])(https?://[^\s<,，。）\)]+)', r'<a href="\1" target="_blank">\1</a>', text)
     return text
 
 
@@ -104,6 +129,7 @@ def notes_to_html(body):
     lines = body.split('\n')
     html_parts = []
     in_list = False
+    notes_to_html._in_sublist = False
     i = 0
 
     while i < len(lines):
@@ -161,33 +187,71 @@ def notes_to_html(body):
             i += 1
             continue
 
-        # 列表项
-        list_m = re.match(r'^-\s+(.+)$', line)
-        if list_m:
+        # 列表项（无序 - 或有序 1.），支持一级和二级（2+空格缩进）
+        ul_m = re.match(r'^-\s+(.+)$', line)
+        ol_m = re.match(r'^\d+\.\s+(.+)$', line)
+        sub_ul_m = re.match(r'^ {2,}-\s+(.+)$', line)
+        sub_ol_m = re.match(r'^ {2,}\d+\.\s+(.+)$', line)
+
+        if sub_ul_m or sub_ol_m:
+            # 二级列表项
+            content = (sub_ul_m or sub_ol_m).group(1)
+            tag = 'ul' if sub_ul_m else 'ol'
+            if not getattr(notes_to_html, '_in_sublist', False):
+                html_parts.append(f'<{tag} class="arch-sublist">')
+                notes_to_html._in_sublist = tag
+            elif notes_to_html._in_sublist != tag:
+                html_parts.append(f'</{notes_to_html._in_sublist}>')
+                html_parts.append(f'<{tag} class="arch-sublist">')
+                notes_to_html._in_sublist = tag
+            html_parts.append(f'<li>{inline_md(content)}</li>')
+            i += 1
+            continue
+        else:
+            if getattr(notes_to_html, '_in_sublist', False):
+                html_parts.append(f'</{notes_to_html._in_sublist}>')
+                notes_to_html._in_sublist = False
+
+        if ul_m or ol_m:
+            content = (ul_m or ol_m).group(1)
+            new_type = 'ul' if ul_m else 'ol'
+            if in_list and in_list != new_type:
+                html_parts.append(f'</{in_list}>')
+                in_list = False
             if not in_list:
-                html_parts.append('<ul class="arch-list">')
-                in_list = True
-            html_parts.append(f'<li>{inline_md(list_m.group(1))}</li>')
+                cls = ' class="arch-list"' if new_type == 'ul' else ' class="arch-list-ol"'
+                html_parts.append(f'<{new_type}{cls}>')
+                in_list = new_type
+            html_parts.append(f'<li>{inline_md(content)}</li>')
             i += 1
             continue
 
         # 空行
         if line.strip() == '':
+            if getattr(notes_to_html, '_in_sublist', False):
+                html_parts.append(f'</{notes_to_html._in_sublist}>')
+                notes_to_html._in_sublist = False
             if in_list:
-                html_parts.append('</ul>')
+                html_parts.append(f'</{in_list}>')
                 in_list = False
             i += 1
             continue
 
         # 普通段落
+        if getattr(notes_to_html, '_in_sublist', False):
+            html_parts.append(f'</{notes_to_html._in_sublist}>')
+            notes_to_html._in_sublist = False
         if in_list:
-            html_parts.append('</ul>')
+            html_parts.append(f'</{in_list}>')
             in_list = False
         html_parts.append(f'<p>{inline_md(line)}</p>')
         i += 1
 
+    if getattr(notes_to_html, '_in_sublist', False):
+        html_parts.append(f'</{notes_to_html._in_sublist}>')
+        notes_to_html._in_sublist = False
     if in_list:
-        html_parts.append('</ul>')
+        html_parts.append(f'</{in_list}>')
 
     return '\n                                    '.join(html_parts)
 
@@ -344,14 +408,12 @@ def render_card(arch):
     return html
 
 
-def render_toc(archs):
+def render_toc(archs, compare_title='微架构演进对比'):
     """生成目录 HTML"""
     items = []
     for a in archs:
-        tags = [t.strip() for t in a.get('tags', '').split(',') if t.strip()]
-        tag_str = ' - ' + ', '.join(tags) if tags else ''
-        items.append(f'                        <li><a href="#{a["id"]}">{a["name"]} ({a["year"]}){tag_str}</a></li>')
-    items.append(f'                        <li><a href="#arch-compare">SM 结构演进对比表</a></li>')
+        items.append(f'                        <li><a href="#{a["id"]}">{a["name"]} ({a["year"]})</a></li>')
+    items.insert(0, f'                        <li><a href="#arch-compare">{compare_title}</a></li>')
     return '\n'.join(items)
 
 
@@ -388,34 +450,31 @@ def render_compare_table(compare_md):
     return html
 
 
-def render_section(archs, compare_md):
+def render_section(archs, compare_md, compare_title='微架构演进对比'):
     """生成完整的 section 内容（不含 <section> 标签本身）"""
-    toc_html = render_toc(archs)
+    toc_html = render_toc(archs, compare_title)
     cards_html = '\n\n'.join(render_card(a) for a in archs)
     table_html = render_compare_table(compare_md)
 
     return f'''
                 <h1 class="section-title">NVIDIA 微架构演进</h1>
-                <div class="intro-box">
-                    <p>从 Fermi 到 Ampere，NVIDIA GPU 的 SM（Streaming Multiprocessor）经历了多次重大变革：CUDA Core 的拆分与重组、Tensor Core 的引入、双精度单元的增减、SIMT 执行模型的改进。本文梳理每一代架构的 SM 内部结构和关键变化。</p>
+
+                <h2 class="subsection-title" id="arch-compare">{compare_title}</h2>
+                <div class="matrix-container">
+                    {table_html}
                 </div>
 
-                <div class="page-toc">
+                <div class="page-toc" style="margin-top:24px">
                     <h3>目录</h3>
                     <ul>
 {toc_html}
                     </ul>
                 </div>
 
-                <div class="arch-timeline">
+                <div class="arch-timeline" style="margin-top:32px">
 
 {cards_html}
 
-                </div>
-
-                <h2 class="subsection-title" id="arch-compare">SM 结构演进对比</h2>
-                <div class="matrix-container">
-                    {table_html}
                 </div>
             '''
 
@@ -456,11 +515,11 @@ def main():
     md_text = MD_FILE.read_text(encoding='utf-8')
 
     print('解析 markdown ...')
-    archs, compare_md = parse_md(md_text)
+    archs, compare_md, compare_title = parse_md(md_text)
     print(f'  找到 {len(archs)} 个架构')
 
     print('生成 HTML ...')
-    section_html = render_section(archs, compare_md)
+    section_html = render_section(archs, compare_md, compare_title)
 
     print('读取 web/index.html ...')
     html = HTML_FILE.read_text(encoding='utf-8')
