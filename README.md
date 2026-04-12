@@ -4,7 +4,7 @@ NVIDIA GPU 微架构演进与数据精度格式交互式知识库。
 
 ## Live Demo
 
-[https://zznjupt.github.io/zznjupt/web/](https://zznjupt.github.io/zznjupt/web/)
+[https://zznjupt.github.io/gpu-arch-wiki/web/](https://zznjupt.github.io/gpu-arch-wiki/web/)
 
 ## Content
 
