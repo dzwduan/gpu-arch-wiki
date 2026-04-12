@@ -1270,7 +1270,13 @@
                                     <p><strong>大模型时代的数据中心旗舰。</strong></p>
                                     <ul class="arch-list">
                                     <li>8 个 GPC，66 个 TPC，每个 TPC 有两个 SM；一共 132 个 SM。（H100 SXM5 参数）</li>
-                                    <li><strong>Tensor Core 4.0：</strong>原生 FP8 支持（E4M3 / E5M2），引入 <code>wgmma</code>（Warp Group MMA）指令，128 线程协作完成矩阵运算。FP16 吞吐 729 TFLOPS，FP8 达 1,448 TFLOPS（H800）。</li>
+                                    <li><strong>Tensor Core 4.0：</strong></li>
+                                    <ul class="arch-sublist">
+                                    <li>原生 FP8 支持（E4M3 / E5M2）。</li>
+                                    <li>引入 <code>wgmma</code>（Warp Group MMA）指令，128 线程协作完成矩阵运算。</li>
+                                    <li>FP16 吞吐 729 TFLOPS。</li>
+                                    <li>FP8 达 1,448 TFLOPS（H800）。</li>
+                                    </ul>
                                     <li><strong>Transformer Engine：</strong>硬件动态精度选择，每层自动在 FP8 和 FP16 之间切换，训练精度不损失。</li>
                                     <li><strong>Thread Block Cluster：</strong>跨 SM 的线程块协作原语。</li>
                                     <li><strong>Distributed Shared Memory (DSMEM)：</strong>SM 间可直接访问彼此的 Shared Memory，延迟 180 cycles，带宽 3.27 TB/s。</li>
@@ -1330,7 +1336,13 @@
                                 <div class="arch-notes">
                                     <p><strong>双芯片封装，2080 亿晶体管。</strong>INT32 和 FP32 执行路径统一，INT32 Core 数量与 FP32 持平。</p>
                                     <ul class="arch-list">
-                                    <li><strong>Tensor Core 5.0：</strong>全新 FP4（e2m1）和 FP6（e3m2 / e2m3）支持。FP4 吞吐 7,702 TFLOPS，FP8 吞吐 3,851 TFLOPS（B200）。引入 <code>tcgen05.mma</code> 单线程 tensor 指令，替代 warp 级 MMA，延迟从 32 cycles 降至 11 cycles。</li>
+                                    <li><strong>Tensor Core 5.0：</strong></li>
+                                    <ul class="arch-sublist">
+                                    <li>全新 FP4（e2m1）和 FP6（e3m2 / e2m3）支持。</li>
+                                    <li>FP4 吞吐 7,702 TFLOPS。</li>
+                                    <li>FP8 吞吐 3,851 TFLOPS（B200）。</li>
+                                    <li>引入 <code>tcgen05.mma</code> 单线程 tensor 指令，替代 warp 级 MMA，延迟从 32 cycles 降至 11 cycles。</li>
+                                    </ul>
                                     <li><strong>Tensor Memory (TMEM)：</strong>全新的 256KB 专用 Tensor Core 存储，512 列 × 128 lane 的 2D 阵列。读带宽 16 TB/s，写带宽 8 TB/s（每 SM）。缓存未命中延迟降低 58%。</li>
                                     <li><strong>硬件解压引擎：</strong>原生支持 LZ4、Snappy、Zstd、GZIP 解压。</li>
                                     <li><strong>B200</strong>：148 SM，192GB HBM3e。<strong>GB202</strong>：192 SM，24,576 FP32 Core，TSMC N4P。</li>

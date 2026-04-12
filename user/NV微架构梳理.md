@@ -386,7 +386,11 @@ image: hopper_sm.png
 ### 说明
 **大模型时代的数据中心旗舰。**
 - 8 个 GPC，66 个 TPC，每个 TPC 有两个 SM；一共 132 个 SM。（H100 SXM5 参数）
-- **Tensor Core 4.0：**原生 FP8 支持（E4M3 / E5M2），引入 `wgmma`（Warp Group MMA）指令，128 线程协作完成矩阵运算。FP16 吞吐 729 TFLOPS，FP8 达 1,448 TFLOPS（H800）。
+- **Tensor Core 4.0：**
+  - 原生 FP8 支持（E4M3 / E5M2）。
+  - 引入 `wgmma`（Warp Group MMA）指令，128 线程协作完成矩阵运算。
+  - FP16 吞吐 729 TFLOPS。
+  - FP8 达 1,448 TFLOPS（H800）。
 - **Transformer Engine：**硬件动态精度选择，每层自动在 FP8 和 FP16 之间切换，训练精度不损失。
 - **Thread Block Cluster：**跨 SM 的线程块协作原语。
 - **Distributed Shared Memory (DSMEM)：**SM 间可直接访问彼此的 Shared Memory，延迟 180 cycles，带宽 3.27 TB/s。
@@ -425,7 +429,11 @@ tags: B100 / B200, FP4 / TMEM
 ### 说明
 **双芯片封装，2080 亿晶体管。**INT32 和 FP32 执行路径统一，INT32 Core 数量与 FP32 持平。
 
-- **Tensor Core 5.0：**全新 FP4（e2m1）和 FP6（e3m2 / e2m3）支持。FP4 吞吐 7,702 TFLOPS，FP8 吞吐 3,851 TFLOPS（B200）。引入 `tcgen05.mma` 单线程 tensor 指令，替代 warp 级 MMA，延迟从 32 cycles 降至 11 cycles。
+- **Tensor Core 5.0：**
+  - 全新 FP4（e2m1）和 FP6（e3m2 / e2m3）支持。
+  - FP4 吞吐 7,702 TFLOPS。
+  - FP8 吞吐 3,851 TFLOPS（B200）。
+  - 引入 `tcgen05.mma` 单线程 tensor 指令，替代 warp 级 MMA，延迟从 32 cycles 降至 11 cycles。
 - **Tensor Memory (TMEM)：**全新的 256KB 专用 Tensor Core 存储，512 列 × 128 lane 的 2D 阵列。读带宽 16 TB/s，写带宽 8 TB/s（每 SM）。缓存未命中延迟降低 58%。
 - **硬件解压引擎：**原生支持 LZ4、Snappy、Zstd、GZIP 解压。
 - **B200**：148 SM，192GB HBM3e。**GB202**：192 SM，24,576 FP32 Core，TSMC N4P。
