@@ -655,33 +655,31 @@
                     <p>从 Fermi 到 Ampere，NVIDIA GPU 的 SM（Streaming Multiprocessor）经历了多次重大变革：CUDA Core 的拆分与重组、Tensor Core 的引入、双精度单元的增减、SIMT 执行模型的改进。本文梳理每一代架构的 SM 内部结构和关键变化。</p>
                 </div>
 
-                <!-- 目录索引 -->
-                <div class="page-toc visible">
+                <div class="page-toc">
                     <h3>目录</h3>
                     <ul>
-                        <li><a href="#arch-fermi">Fermi (2010) - 首个完整 GPU 计算架构</a></li>
-                        <li><a href="#arch-kepler">Kepler (2012) - 双精度黄金时代</a></li>
-                        <li><a href="#arch-maxwell">Maxwell (2014) - 能效比优先</a></li>
-                        <li><a href="#arch-pascal">Pascal (2016) - FP16 与 NVLink</a></li>
-                        <li><a href="#arch-volta">Volta (2017) - Tensor Core 诞生</a></li>
-                        <li><a href="#arch-turing">Turing (2018) - RT Core 与推理量化</a></li>
-                        <li><a href="#arch-ampere">Ampere (2020) - 稀疏 Tensor Core</a></li>
-                        <li><a href="#arch-ada">Ada Lovelace (2022) - 4th Gen Tensor Core, FP8</a></li>
-                        <li><a href="#arch-hopper">Hopper (2022) - Transformer Engine</a></li>
-                        <li><a href="#arch-blackwell">Blackwell (2024) - FP4, TMEM</a></li>
-                        <li><a href="#arch-rubin">Rubin (2026) - HBM4, 6th Gen TC</a></li>
+                        <li><a href="#arch-fermi">Fermi (2010) - 修改完整 GPU 计算架构</a></li>
+                        <li><a href="#arch-kepler">Kepler (2012) - SMX, 双精度黄金时代</a></li>
+                        <li><a href="#arch-maxwell">Maxwell (2014) - SMM, 能效比优先</a></li>
+                        <li><a href="#arch-pascal">Pascal (2016) - FP16, NVLink</a></li>
+                        <li><a href="#arch-volta">Volta (2017) - V100, Tensor Core 诞生</a></li>
+                        <li><a href="#arch-turing">Turing (2018) - RTX 20 系列, RT Core</a></li>
+                        <li><a href="#arch-ampere">Ampere (2020) - A100 / RTX 30, 稀疏 Tensor Core</a></li>
+                        <li><a href="#arch-ada">Ada Lovelace (2022) - RTX 40 系列, FP8 / DLSS 3</a></li>
+                        <li><a href="#arch-hopper">Hopper (2022) - H100 / H200, Transformer Engine</a></li>
+                        <li><a href="#arch-blackwell">Blackwell (2024) - B100 / B200, FP4 / TMEM</a></li>
+                        <li><a href="#arch-rubin">Rubin (2026 (预计)) - R100, HBM4</a></li>
                         <li><a href="#arch-compare">SM 结构演进对比表</a></li>
                     </ul>
                 </div>
 
                 <div class="arch-timeline">
 
-                    <!-- Fermi -->
                     <div class="arch-gen" id="arch-fermi">
                         <div class="arch-gen-header">
                             <h2>Fermi</h2>
                             <span class="paper-tag">2010</span>
-                            <span class="paper-tag">首个完整 GPU 计算架构</span>
+                            <span class="paper-tag">修改完整 GPU 计算架构</span>
                         </div>
                         <div class="arch-content-row">
                             <div class="arch-text">
@@ -698,13 +696,12 @@
                                 </div>
                             </div>
                             <div class="arch-figure">
-                                <img src="images/fermi_sm.png" alt="Fermi SM 架构图">
+                                <img src="images/fermi_sm.png" alt="Fermi 架构图">
                                 <div class="paper-figure-caption">Fermi SM 架构：2 Warp Scheduler + 32 CUDA Core + 16 LD/ST + 4 SFU</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Kepler -->
                     <div class="arch-gen" id="arch-kepler">
                         <div class="arch-gen-header">
                             <h2>Kepler</h2>
@@ -728,13 +725,12 @@
                                 </div>
                             </div>
                             <div class="arch-figure">
-                                <img src="images/kepler_sm.png" alt="Kepler SMX 架构图">
+                                <img src="images/kepler_sm.png" alt="Kepler 架构图">
                                 <div class="paper-figure-caption">Kepler SMX：192 CUDA Core + 64 FP64 Unit，寄存器 65,536 × 32-bit</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Maxwell -->
                     <div class="arch-gen" id="arch-maxwell">
                         <div class="arch-gen-header">
                             <h2>Maxwell</h2>
@@ -758,13 +754,12 @@
                                 </div>
                             </div>
                             <div class="arch-figure">
-                                <img src="images/maxwell_sm.png" alt="Maxwell SMM 架构图">
+                                <img src="images/maxwell_sm.png" alt="Maxwell 架构图">
                                 <div class="paper-figure-caption">Maxwell SMM：4 个 Processing Block，各含 32 CUDA Core</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Pascal -->
                     <div class="arch-gen" id="arch-pascal">
                         <div class="arch-gen-header">
                             <h2>Pascal</h2>
@@ -785,20 +780,19 @@
                                 <div class="arch-notes">
                                     <p>SM 内部进一步精简：2 × 32 = 64 CUDA Core，Warp Scheduler 也缩减为 2 个。但有两个重要变化：</p>
                                     <ul class="arch-list">
-                                        <li><strong>双精度回归</strong>：32 个独立 FP64 单元（2 × 16）</li>
-                                        <li><strong>FP16 支持</strong>：CUDA Core 首次支持半精度计算，为后续 AI 加速铺路</li>
-                                        <li><strong>NVLink</strong>：首次引入 GPU 间高速互联</li>
+                                    <li><strong>双精度回归</strong>：32 个独立 FP64 单元（2 × 16）</li>
+                                    <li><strong>FP16 支持</strong>：CUDA Core 首次支持半精度计算，为后续 AI 加速铺路</li>
+                                    <li><strong>NVLink</strong>：首次引入 GPU 间高速互联</li>
                                     </ul>
                                 </div>
                             </div>
                             <div class="arch-figure">
-                                <img src="images/pascal_sm.png" alt="Pascal SM 架构图">
+                                <img src="images/pascal_sm.png" alt="Pascal 架构图">
                                 <div class="paper-figure-caption">Pascal SM：64 CUDA Core + 32 DP Unit，首次支持 FP16 和 NVLink</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Volta -->
                     <div class="arch-gen" id="arch-volta">
                         <div class="arch-gen-header">
                             <h2>Volta</h2>
@@ -819,15 +813,15 @@
                                 <div class="arch-notes">
                                     <p><strong>里程碑架构。</strong>三大关键变化：</p>
                                     <ul class="arch-list">
-                                        <li><strong>CUDA Core 拆分</strong>：不再是统一的 FPU+ALU，而是独立的 FP32 Core 和 INT32 Core。优势：<strong>两者可以同时执行</strong>，混合运算吞吐翻倍</li>
-                                        <li><strong>Tensor Core 引入</strong>：每个 SM 8 个（4 × 2），每个 TC 每周期执行 4×4×4 GEMM（FP16 输入，FP32 累加），等效 64 个 FP32 ALU</li>
-                                        <li><strong>独立线程调度</strong>：每个线程拥有独立 PC 和调用栈</li>
+                                    <li><strong>CUDA Core 拆分</strong>：不再是统一的 FPU+ALU，而是独立的 FP32 Core 和 INT32 Core。优势：<strong>两者可以同时执行</strong>，混合运算吞吐翻倍</li>
+                                    <li><strong>Tensor Core 引入</strong>：每个 SM 8 个（4 × 2），每个 TC 每周期执行 4×4×4 GEMM（FP16 输入，FP32 累加），等效 64 个 FP32 ALU</li>
+                                    <li><strong>独立线程调度</strong>：每个线程拥有独立 PC 和调用栈</li>
                                     </ul>
                                     <p>Warp Scheduler 变为 1:1 对应 Dispatch Unit（之前是 1:2），并增加 L0 ICache。</p>
                                 </div>
                             </div>
                             <div class="arch-figure">
-                                <img src="images/volta_sm.png" alt="Volta SM 架构图">
+                                <img src="images/volta_sm.png" alt="Volta 架构图">
                                 <div class="paper-figure-caption">Volta SM：4 Sub-Core，各含 FP32 + INT32 + FP64 + Tensor Core</div>
                             </div>
                         </div>
@@ -835,20 +829,20 @@
                         <h3 class="arch-sub-title">Volta SIMT 改进：独立线程调度</h3>
                         <div class="arch-content-row">
                             <div class="arch-figure-half">
-                                <img src="images/simt_old.png" alt="旧 SIMT 分支模型">
+                                <img src="images/simt_old.png" alt="Pascal 及之前：分支两侧串行执行">
                                 <div class="paper-figure-caption">Pascal 及之前：分支两侧串行执行</div>
                             </div>
                             <div class="arch-figure-half">
-                                <img src="images/simt_volta.png" alt="Volta 独立线程调度">
+                                <img src="images/simt_volta.png" alt="Volta：独立 PC + __syncwarp()，分支可交错调度">
                                 <div class="paper-figure-caption">Volta：独立 PC + __syncwarp()，分支可交错调度</div>
                             </div>
                         </div>
                         <div class="arch-notes" style="margin-top:12px">
                             <p>Pascal 及之前，一个 Warp 遇到分支时两侧只能串行执行。Volta 将 PC 和调用栈设计为每个线程独立，分支内的指令可以在更细的粒度上混合调度，并支持 <code>__syncwarp()</code> 显式同步。</p>
                         </div>
+
                     </div>
 
-                    <!-- Turing -->
                     <div class="arch-gen" id="arch-turing">
                         <div class="arch-gen-header">
                             <h2>Turing</h2>
@@ -872,13 +866,12 @@
                                 </div>
                             </div>
                             <div class="arch-figure">
-                                <img src="images/turing_sm.png" alt="Turing SM 架构图">
+                                <img src="images/turing_sm.png" alt="Turing 架构图">
                                 <div class="paper-figure-caption">Turing SM：4 Processing Block + RT Core，96KB L1/Shared Memory</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Ampere -->
                     <div class="arch-gen" id="arch-ampere">
                         <div class="arch-gen-header">
                             <h2>Ampere</h2>
@@ -902,20 +895,19 @@
                                 </div>
                             </div>
                             <div class="arch-figure">
-                                <img src="images/ampere_sm.png" alt="Ampere SM 架构图">
+                                <img src="images/ampere_sm.png" alt="Ampere 架构图">
                                 <div class="paper-figure-caption">Ampere SM：FP64 回归 + 稀疏 TC，192KB L1/Shared Memory</div>
                             </div>
                         </div>
 
-                        <h3 class="arch-sub-title">A100 vs V100 性能提升</h3>
+                        <h3 class="arch-sub-title">Ampere A100 vs V100 性能提升</h3>
                         <div class="paper-figure" style="margin-top:12px">
-                            <img src="images/a100_vs_v100.png" alt="A100 vs V100 提升" style="max-width:700px">
+                            <img src="images/a100_vs_v100.png" alt="A100 相对 V100 的各项指标提升，稀疏 Tensor Core FP16 达 5.0x" style="max-width:700px">
                             <div class="paper-figure-caption">A100 相对 V100 的各项指标提升，稀疏 Tensor Core FP16 达 5.0x</div>
                         </div>
-                    </div>
-                </div>
 
-                    <!-- Ada Lovelace -->
+                    </div>
+
                     <div class="arch-gen" id="arch-ada">
                         <div class="arch-gen-header">
                             <h2>Ada Lovelace</h2>
@@ -948,7 +940,6 @@
                         </div>
                     </div>
 
-                    <!-- Hopper -->
                     <div class="arch-gen" id="arch-hopper">
                         <div class="arch-gen-header">
                             <h2>Hopper</h2>
@@ -983,7 +974,6 @@
                         </div>
                     </div>
 
-                    <!-- Blackwell -->
                     <div class="arch-gen" id="arch-blackwell">
                         <div class="arch-gen-header">
                             <h2>Blackwell</h2>
@@ -1016,7 +1006,6 @@
                         </div>
                     </div>
 
-                    <!-- Rubin -->
                     <div class="arch-gen" id="arch-rubin">
                         <div class="arch-gen-header">
                             <h2>Rubin</h2>
@@ -1045,12 +1034,13 @@
                                 </div>
                             </div>
                             <div class="arch-figure">
-                                <div class="arch-figure-placeholder">Rubin 架构图<br>(待补充)</div>
+                                <div class="arch-figure-placeholder">Rubin SM 架构图<br>(待补充)</div>
                             </div>
                         </div>
                     </div>
 
-                <!-- 对比表 -->
+                </div>
+
                 <h2 class="subsection-title" id="arch-compare">SM 结构演进对比</h2>
                 <div class="matrix-container">
                     <table class="hardware-matrix">
@@ -1077,13 +1067,14 @@
                             <tr><td style="text-align:left;font-weight:600">Volta</td><td>2017</td><td>SM</td><td>64</td><td>64</td><td>32</td><td>8</td><td>4</td><td>4</td><td>32</td><td>16</td></tr>
                             <tr><td style="text-align:left;font-weight:600">Turing</td><td>2018</td><td>SM</td><td>64</td><td>64</td><td>-</td><td>8</td><td>4</td><td>4</td><td>16</td><td>16</td></tr>
                             <tr><td style="text-align:left;font-weight:600">Ampere</td><td>2020</td><td>SM</td><td>64</td><td>64</td><td>32</td><td>4</td><td>4</td><td>4</td><td>32</td><td>16</td></tr>
-<tr><td style="text-align:left;font-weight:600">Ada</td><td>2022</td><td>SM</td><td>128</td><td>64</td><td>2</td><td>4 (4th)</td><td>4</td><td>4</td><td>32</td><td>16</td></tr>
-<tr><td style="text-align:left;font-weight:600">Hopper</td><td>2022</td><td>SM</td><td>128</td><td>64</td><td>64</td><td>4 (4th)</td><td>4</td><td>4</td><td>32</td><td>16</td></tr>
-<tr><td style="text-align:left;font-weight:600">Blackwell</td><td>2024</td><td>SM</td><td>128</td><td>128</td><td>TBD</td><td>4 (5th)</td><td>4</td><td>4</td><td>~32</td><td>~16</td></tr>
-<tr><td style="text-align:left;font-weight:600">Rubin</td><td>2026</td><td>SM</td><td>~128+</td><td>TBD</td><td>TBD</td><td>TBD (6th)</td><td>TBD</td><td>TBD</td><td>TBD</td><td>TBD</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Ada</td><td>2022</td><td>SM</td><td>128</td><td>64</td><td>2</td><td>4 (4th)</td><td>4</td><td>4</td><td>32</td><td>16</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Hopper</td><td>2022</td><td>SM</td><td>128</td><td>64</td><td>64</td><td>4 (4th)</td><td>4</td><td>4</td><td>32</td><td>16</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Blackwell</td><td>2024</td><td>SM</td><td>128</td><td>128</td><td>TBD</td><td>4 (5th)</td><td>4</td><td>4</td><td>~32</td><td>~16</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Rubin</td><td>2026</td><td>SM</td><td>~128+</td><td>TBD</td><td>TBD</td><td>TBD (6th)</td><td>TBD</td><td>TBD</td><td>TBD</td><td>TBD</td></tr>
                         </tbody>
                     </table>
                 </div>
+            
             </section>
 
             <!-- Tensor Core -->

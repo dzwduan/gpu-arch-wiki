@@ -4,6 +4,13 @@ document.addEventListener('DOMContentLoaded', () => {
     renderFormatCards();
     renderHardwareMatrix();
     initLightbox();
+
+    // 初始化当前 active section 的目录
+    const activeSection = document.querySelector('.content-section.active');
+    if (activeSection) {
+        const toc = activeSection.querySelector('.page-toc');
+        if (toc) toc.classList.add('visible');
+    }
 });
 
 // 图片放大查看
