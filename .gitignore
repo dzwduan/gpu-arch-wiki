@@ -5,12 +5,16 @@
 .vscode/
 .idea/
 
-# Logs
+# Logs & temp
 *.log
-
-# Temporary files
 *.tmp
 *.temp
 
-# Humanize (已删除)
+# Humanize
 .humanize/
+
+# Claude
+.claude/
+
+# References (博文、论文等参考资料)
+references/

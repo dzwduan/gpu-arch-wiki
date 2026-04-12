@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 build_arch.py — 从 NV微架构梳理.md 生成 HTML，替换 web/index.html 中的 NV 微架构 section。
-用法：python3 写作/build_arch.py
+用法：python3 user/build_arch.py
 """
 
 import re
@@ -436,7 +436,7 @@ def replace_section(html, new_content):
 # ── 图片同步 ──────────────────────────────────────────────
 
 def sync_images():
-    """将 写作/images/ 中的图片复制到 web/images/"""
+    """将 user/images/ 中的图片复制到 web/images/"""
     if not SRC_IMAGES.exists():
         return
     DST_IMAGES.mkdir(exist_ok=True)
@@ -452,7 +452,7 @@ def sync_images():
 # ── 主流程 ────────────────────────────────────────────────
 
 def main():
-    print('读取 写作/NV微架构梳理.md ...')
+    print('读取 user/NV微架构梳理.md ...')
     md_text = MD_FILE.read_text(encoding='utf-8')
 
     print('解析 markdown ...')

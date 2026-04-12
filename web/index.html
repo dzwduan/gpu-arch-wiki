@@ -31,7 +31,7 @@
                 <ul class="nav-menu">
                     <li class="nav-item" data-section="precision-formats">
                         <span class="icon">🔢</span>
-                        <span>精度格式图谱</span>
+                        <span>数据精度格式</span>
                     </li>
                     <li class="nav-item" data-section="paper-fp8-dot4">
                         <span class="icon">📄</span>
@@ -45,7 +45,7 @@
         <main class="main-content">
             <!-- 数据精度格式区 -->
             <section id="precision-formats" class="content-section">
-                <h1 class="section-title">数据精度格式知识图谱</h1>
+                <h1 class="section-title">数据精度格式</h1>
                 <div class="intro-box">
                     <p>本页面系统整理 AI 训练、推理、HPC 和工程选型场景中的各种数据精度格式，帮助您理解它们的差异、联系、应用场景和硬件支持情况。</p>
                     <div class="stats-grid">
@@ -658,7 +658,7 @@
                 <div class="page-toc">
                     <h3>目录</h3>
                     <ul>
-                        <li><a href="#arch-fermi">Fermi (2010) - 修改完整 GPU 计算架构</a></li>
+                        <li><a href="#arch-fermi">Fermi (2010) - 首个完整 GPU 计算架构</a></li>
                         <li><a href="#arch-kepler">Kepler (2012) - SMX, 双精度黄金时代</a></li>
                         <li><a href="#arch-maxwell">Maxwell (2014) - SMM, 能效比优先</a></li>
                         <li><a href="#arch-pascal">Pascal (2016) - FP16, NVLink</a></li>
@@ -679,7 +679,7 @@
                         <div class="arch-gen-header">
                             <h2>Fermi</h2>
                             <span class="paper-tag">2010</span>
-                            <span class="paper-tag">修改完整 GPU 计算架构</span>
+                            <span class="paper-tag">首个完整 GPU 计算架构</span>
                         </div>
                         <div class="arch-content-row">
                             <div class="arch-text">
@@ -690,14 +690,19 @@
                                     <div class="arch-sm-item"><span class="sm-value">4</span><span class="sm-label">SFU</span></div>
                                 </div>
                                 <div class="arch-notes">
-                                    <p>Fermi 是 NVIDIA 第一个面向通用计算设计的完整架构。每个 SM 包含 32 个 CUDA Core，分布在 2 条 lane 上（每条 16 个）。</p>
-                                    <p>每个 CUDA Core 内部是 <strong>1 个单精度浮点单元 (FPU) + 1 个整数单元 (ALU)</strong>，可以直接执行 FMA（乘累加）操作。每个 cycle 可跑 16 个双精度 FMA。</p>
-                                    <p>寄存器文件 32,768 × 32-bit，底部是 64KB Shared Memory / L1 Cache。</p>
+                                    <ul class="arch-list">
+                                    <li>Fermi 是 NVIDIA 第一个面向通用计算设计的完整架构。每个 SM 包含 32 个 CUDA Core，分布在 2 条 lane 上（每条 16 个）。</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li>每个 CUDA Core 内部是 <strong>1 个单精度浮点单元 (FPU) + 1 个整数单元 (ALU)</strong>，可以直接执行 FMA（乘累加）操作。每个 cycle 可跑 16 个双精度 FMA。</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li>寄存器文件 32768 × 32-bit，底部是 64KB Shared Memory / L1 Cache。</li>
+                                    </ul>
                                 </div>
                             </div>
                             <div class="arch-figure">
                                 <img src="images/fermi_sm.png" alt="Fermi 架构图">
-                                <div class="paper-figure-caption">Fermi SM 架构：2 Warp Scheduler + 32 CUDA Core + 16 LD/ST + 4 SFU</div>
                             </div>
                         </div>
                     </div>
@@ -720,13 +725,16 @@
                                     <div class="arch-sm-item"><span class="sm-value">32</span><span class="sm-label">SFU</span></div>
                                 </div>
                                 <div class="arch-notes">
-                                    <p>SM 更名为 <strong>SMX</strong>。相比 Fermi 大幅堆料：CUDA Core 从 32 暴增到 192（4 × 3 × 16，每条 lane 仍是 16 个）。</p>
-                                    <p>最关键的变化：<strong>独立的 64 个双精度运算单元</strong>，不需要通过单精度单元去做双精度运算。这使得 Kepler 的双精度性能远超前后几代。4 个 Warp Scheduler 搭配 8 个 Dispatch Unit（1:2 比例）。</p>
+                                    <ul class="arch-list">
+                                    <li>SM 更名为 <strong>SMX</strong>。相比 Fermi 大幅堆料：CUDA Core 从 32 暴增到 192（4 × 3 × 16，每条 lane 仍是 16 个）。</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li>最关键的变化：<strong>独立的 64 个双精度运算单元</strong>，不需要通过单精度单元去做双精度运算。这使得 Kepler 的双精度性能远超前后几代。4 个 Warp Scheduler 搭配 8 个 Dispatch Unit（1:2 比例）。</li>
+                                    </ul>
                                 </div>
                             </div>
                             <div class="arch-figure">
                                 <img src="images/kepler_sm.png" alt="Kepler 架构图">
-                                <div class="paper-figure-caption">Kepler SMX：192 CUDA Core + 64 FP64 Unit，寄存器 65,536 × 32-bit</div>
                             </div>
                         </div>
                     </div>
@@ -749,13 +757,16 @@
                                     <div class="arch-sm-item"><span class="sm-value">32</span><span class="sm-label">SFU</span></div>
                                 </div>
                                 <div class="arch-notes">
-                                    <p>SM 更名为 <strong>SMM</strong>。开始做减法：<strong>移除独立双精度计算单元</strong>，CUDA Core 从 192 精简到 128（4 × 32）。</p>
-                                    <p>工艺提升带来的收益：每个 CUDA Core 性能比 Kepler 提升 <strong>1.4x</strong>，整体能效比提升 <strong>2x</strong>。SMM 采用 4 个 Processing Block，每个 Block 有独立的 Warp Scheduler、Instruction Buffer 和 Register File。</p>
+                                    <ul class="arch-list">
+                                    <li>SM 更名为 <strong>SMM</strong>。开始做减法：<strong>移除独立双精度计算单元</strong>，CUDA Core 从 192 精简到 128（4 × 32）。</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li>工艺提升带来的收益：每个 CUDA Core 性能比 Kepler 提升 <strong>1.4x</strong>，整体能效比提升 <strong>2x</strong>。SMM 采用 4 个 Processing Block，每个 Block 有独立的 Warp Scheduler、Instruction Buffer 和 Register File。</li>
+                                    </ul>
                                 </div>
                             </div>
                             <div class="arch-figure">
                                 <img src="images/maxwell_sm.png" alt="Maxwell 架构图">
-                                <div class="paper-figure-caption">Maxwell SMM：4 个 Processing Block，各含 32 CUDA Core</div>
                             </div>
                         </div>
                     </div>
@@ -788,9 +799,14 @@
                             </div>
                             <div class="arch-figure">
                                 <img src="images/pascal_sm.png" alt="Pascal 架构图">
-                                <div class="paper-figure-caption">Pascal SM：64 CUDA Core + 32 DP Unit，首次支持 FP16 和 NVLink</div>
                             </div>
                         </div>
+
+                        <h3 class="arch-sub-title">Pascal SM 微架构图</h3>
+                        <div class="paper-figure" style="margin-top:12px">
+                            <img src="images/pascal_sm_arch.png" alt="" style="max-width:700px">
+                        </div>
+
                     </div>
 
                     <div class="arch-gen" id="arch-volta">
@@ -822,7 +838,6 @@
                             </div>
                             <div class="arch-figure">
                                 <img src="images/volta_sm.png" alt="Volta 架构图">
-                                <div class="paper-figure-caption">Volta SM：4 Sub-Core，各含 FP32 + INT32 + FP64 + Tensor Core</div>
                             </div>
                         </div>
 
@@ -860,16 +875,27 @@
                                     <div class="arch-sm-item"><span class="sm-value">16 / 16</span><span class="sm-label">LD/ST / SFU</span></div>
                                 </div>
                                 <div class="arch-notes">
-                                    <p>最大改动是引入 <strong>RT Core</strong>（光线追踪加速单元）。SM 内计算单元与 Volta 类似，每个 SM 含 4 个 Processing Block：</p>
-                                    <p>每个 Processing Block：1 Warp Scheduler + 1 Dispatch Unit + 16 FP32 + 16 INT32 + <strong>2 Tensor Core</strong> + 4 LD/ST + 4 SFU</p>
-                                    <p>Tensor Core 第二代：在 Volta 基础上<strong>新增 INT8 和 INT4 支持</strong>，开始覆盖推理量化场景。</p>
+                                    <ul class="arch-list">
+                                    <li>最大改动是引入 <strong>RT Core</strong>（光线追踪加速单元）。SM 内计算单元与 Volta 类似，每个 SM 含 4 个 Processing Block：</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li>每个 Processing Block：1 Warp Scheduler + 1 Dispatch Unit + 16 FP32 + 16 INT32 + <strong>2 Tensor Core</strong> + 4 LD/ST + 4 SFU</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li>Tensor Core 第二代：在 Volta 基础上<strong>新增 INT8 和 INT4 支持</strong>，开始覆盖推理量化场景。</li>
+                                    </ul>
                                 </div>
                             </div>
                             <div class="arch-figure">
                                 <img src="images/turing_sm.png" alt="Turing 架构图">
-                                <div class="paper-figure-caption">Turing SM：4 Processing Block + RT Core，96KB L1/Shared Memory</div>
                             </div>
                         </div>
+
+                        <h3 class="arch-sub-title">Turing SM 微架构图</h3>
+                        <div class="paper-figure" style="margin-top:12px">
+                            <img src="images/turing_sm_arch.png" alt="" style="max-width:700px">
+                        </div>
+
                     </div>
 
                     <div class="arch-gen" id="arch-ampere">
@@ -890,20 +916,28 @@
                                     <div class="arch-sm-item"><span class="sm-value">32 / 16</span><span class="sm-label">LD/ST / SFU</span></div>
                                 </div>
                                 <div class="arch-notes">
-                                    <p>每个 Processing Block：1 Warp Scheduler + 1 Dispatch Unit + 16 FP32 + 16 INT32 + 8 FP64 + <strong>1 Tensor Core</strong> + 8 LD/ST + 4 SFU</p>
-                                    <p>Tensor Core 数量从 8 减半到 4，但<strong>每个吞吐量翻 4 倍</strong>，总吞吐翻倍。数据类型大幅扩展：FP16、BF16、TF32、FP64、INT8、INT4、Binary。</p>
+                                    <ul class="arch-list">
+                                    <li>每个 Processing Block：1 Warp Scheduler + 1 Dispatch Unit + 16 FP32 + 16 INT32 + 8 FP64 + <strong>1 Tensor Core</strong> + 8 LD/ST + 4 SFU</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li>Tensor Core 数量从 8 减半到 4，但<strong>每个吞吐量翻 4 倍</strong>，总吞吐翻倍。数据类型大幅扩展：FP16、BF16、TF32、FP64、INT8、INT4、Binary。</li>
+                                    </ul>
                                 </div>
                             </div>
                             <div class="arch-figure">
                                 <img src="images/ampere_sm.png" alt="Ampere 架构图">
-                                <div class="paper-figure-caption">Ampere SM：FP64 回归 + 稀疏 TC，192KB L1/Shared Memory</div>
                             </div>
                         </div>
 
+                        <h3 class="arch-sub-title">Ampere GA 102 SM 微架构图</h3>
+                        <div class="paper-figure" style="margin-top:12px">
+                            <img src="images/GA102_sm.png" alt="" style="max-width:700px">
+                        </div>
+
+
                         <h3 class="arch-sub-title">Ampere A100 vs V100 性能提升</h3>
                         <div class="paper-figure" style="margin-top:12px">
-                            <img src="images/a100_vs_v100.png" alt="A100 相对 V100 的各项指标提升，稀疏 Tensor Core FP16 达 5.0x" style="max-width:700px">
-                            <div class="paper-figure-caption">A100 相对 V100 的各项指标提升，稀疏 Tensor Core FP16 达 5.0x</div>
+                            <img src="images/a100_vs_v100.png" alt="" style="max-width:700px">
                         </div>
 
                     </div>
@@ -926,16 +960,27 @@
                                     <div class="arch-sm-item"><span class="sm-value">32 / 16</span><span class="sm-label">LD/ST / SFU</span></div>
                                 </div>
                                 <div class="arch-notes">
-                                    <p>消费级旗舰。延续 Ampere 的双数据通路（64 专用 FP32 + 64 Flex FP32/INT32），合计 128 FP32 Core。TSMC 4N 工艺。</p>
-                                    <p><strong>第 4 代 Tensor Core：</strong>新增 FP8（E4M3 / E5M2）支持，搭载 Hopper 的 Transformer Engine 技术。吞吐量相比 Ampere 再翻倍。</p>
-                                    <p><strong>第 3 代 RT Core：</strong>新增 Opacity Micro-Map（OMM）和 Displaced Micro-Mesh Engine，光追性能 2x。</p>
-                                    <p><strong>L2 缓存大幅扩容：</strong>AD102 达 96MB（Ampere GA102 仅 6MB，16x 增长），显著减少显存访问。</p>
-                                    <p>支持 DLSS 3（帧生成）、Shader Execution Reordering（SER，光追调度优化）。</p>
-                                    <p><strong>AD102</strong>：144 SM，18,432 FP32 Core，576 TC。<strong>RTX 4090</strong>：128 SM，16,384 FP32 Core。</p>
+                                    <p><strong>消费级旗舰。</strong>延续 Ampere 的双数据通路（64 专用 FP32 + 64 Flex FP32/INT32），合计 128 FP32 Core。TSMC 4N 工艺。</p>
+                                    <ul class="arch-list">
+                                    <li><strong>第 4 代 Tensor Core：</strong>新增 FP8（E4M3 / E5M2）支持，搭载 Hopper 的 Transformer Engine 技术。吞吐量相比 Ampere 再翻倍。</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li><strong>第 3 代 RT Core：</strong>新增 Opacity Micro-Map（OMM）和 Displaced Micro-Mesh Engine，光追性能 2x。</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li><strong>L2 缓存大幅扩容：</strong>AD102 达 96MB（Ampere GA102 仅 6MB，16x 增长），显著减少显存访问。</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li>支持 DLSS 3（帧生成）、Shader Execution Reordering（SER，光追调度优化）。</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li><strong>AD102</strong>：144 SM，18,432 FP32 Core，576 TC。</li>
+                                    <li><strong>RTX 4090</strong>：128 SM，16,384 FP32 Core。</li>
+                                    </ul>
                                 </div>
                             </div>
                             <div class="arch-figure">
-                                <div class="arch-figure-placeholder">Ada Lovelace SM 架构图<br>(待补充)</div>
+                                <img src="images/ada_sm.png" alt="Ada Lovelace 架构图">
                             </div>
                         </div>
                     </div>
@@ -959,19 +1004,39 @@
                                 </div>
                                 <div class="arch-notes">
                                     <p><strong>大模型时代的数据中心旗舰。</strong>FP64 Core 翻倍至 64（vs Ampere 32），Shared Memory + L1 扩大至 256KB。</p>
-                                    <p><strong>第 4 代 Tensor Core：</strong>原生 FP8 支持（E4M3 / E5M2），引入 <code>wgmma</code>（Warp Group MMA）指令，128 线程协作完成矩阵运算。FP16 吞吐 729 TFLOPS，FP8 达 1,448 TFLOPS（H800）。</p>
-                                    <p><strong>Transformer Engine：</strong>硬件动态精度选择，每层自动在 FP8 和 FP16 之间切换，训练精度不损失。</p>
-                                    <p><strong>Thread Block Cluster：</strong>跨 SM 的线程块协作原语。</p>
-                                    <p><strong>Distributed Shared Memory (DSMEM)：</strong>SM 间可直接访问彼此的 Shared Memory，延迟 180 cycles，带宽 3.27 TB/s。</p>
-                                    <p><strong>Tensor Memory Accelerator (TMA)：</strong>异步 1D-5D 张量搬运，解放计算线程。</p>
-                                    <p><strong>DPX 指令集：</strong>动态规划算法加速（Smith-Waterman 等），最高 13x 提速。</p>
-                                    <p><strong>H100 SXM5</strong>：132 SM，16,896 FP32 Core，528 TC，80GB HBM3（3 TB/s），50MB L2，800 亿晶体管，TSMC N4。</p>
+                                    <ul class="arch-list">
+                                    <li><strong>第 4 代 Tensor Core：</strong>原生 FP8 支持（E4M3 / E5M2），引入 <code>wgmma</code>（Warp Group MMA）指令，128 线程协作完成矩阵运算。FP16 吞吐 729 TFLOPS，FP8 达 1,448 TFLOPS（H800）。</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li><strong>Transformer Engine：</strong>硬件动态精度选择，每层自动在 FP8 和 FP16 之间切换，训练精度不损失。</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li><strong>Thread Block Cluster：</strong>跨 SM 的线程块协作原语。</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li><strong>Distributed Shared Memory (DSMEM)：</strong>SM 间可直接访问彼此的 Shared Memory，延迟 180 cycles，带宽 3.27 TB/s。</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li><strong>Tensor Memory Accelerator (TMA)：</strong>异步 1D-5D 张量搬运，解放计算线程。</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li><strong>DPX 指令集：</strong>动态规划算法加速（Smith-Waterman 等），最高 13x 提速。</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li><strong>H100 SXM5</strong>：132 SM，16,896 FP32 Core，528 TC，80GB HBM3（3 TB/s），50MB L2，800 亿晶体管，TSMC N4。</li>
+                                    </ul>
                                 </div>
                             </div>
                             <div class="arch-figure">
-                                <div class="arch-figure-placeholder">Hopper SM 架构图<br>(待补充)</div>
+                                <img src="images/hopper_sm.png" alt="Hopper 架构图">
                             </div>
                         </div>
+
+                        <h3 class="arch-sub-title">Hopper CUDA Kernel</h3>
+                        <div class="arch-notes" style="margin-top:12px">
+                            <p>CUDA Kernel 之前是三个层次：Grid、Thread Block 和 Thread，分别对应整个 GPU、SM 和 CUDA Core，而这一代引入了 Thread Block Cluster 的层次，变成了四个层次：Grid、Thread Block Cluster、Thread Block 和 Thread。（H100 introduces a new Thread Block Cluster architecture that exposes control of locality at a granularity larger than a single Thread Block on a single SM.）其中 Thread Block 对应 GPC，每个 GPC 有多个 TPC，每个 TPC 有多个 SM。（The Clusters in H100 run concurrently across SMs within a GPC. A GPC is a group of SMs in the hardware hierarchy that are always physically close together.）</p>
+                        </div>
+
                     </div>
 
                     <div class="arch-gen" id="arch-blackwell">
@@ -993,11 +1058,21 @@
                                 </div>
                                 <div class="arch-notes">
                                     <p><strong>双芯片封装，2080 亿晶体管。</strong>INT32 和 FP32 执行路径统一，INT32 Core 数量与 FP32 持平。</p>
-                                    <p><strong>第 5 代 Tensor Core：</strong>全新 FP4（e2m1）和 FP6（e3m2 / e2m3）支持。FP4 吞吐 7,702 TFLOPS，FP8 吞吐 3,851 TFLOPS（B200）。引入 <code>tcgen05.mma</code> 单线程 tensor 指令，替代 warp 级 MMA，延迟从 32 cycles 降至 11 cycles。</p>
-                                    <p><strong>Tensor Memory (TMEM)：</strong>全新的 256KB 专用 Tensor Core 存储，512 列 × 128 lane 的 2D 阵列。读带宽 16 TB/s，写带宽 8 TB/s（每 SM）。缓存未命中延迟降低 58%。</p>
-                                    <p><strong>硬件解压引擎：</strong>原生支持 LZ4、Snappy、Zstd、GZIP 解压。</p>
-                                    <p><strong>B200</strong>：148 SM，192GB HBM3e。<strong>GB202</strong>：192 SM，24,576 FP32 Core，TSMC N4P。</p>
-                                    <p><strong>LLM 性能：</strong>Mistral-7B FP8 推理 78,400 tok/s（1.59x vs H200），FP4 达 112,800 tok/s。</p>
+                                    <ul class="arch-list">
+                                    <li><strong>第 5 代 Tensor Core：</strong>全新 FP4（e2m1）和 FP6（e3m2 / e2m3）支持。FP4 吞吐 7,702 TFLOPS，FP8 吞吐 3,851 TFLOPS（B200）。引入 <code>tcgen05.mma</code> 单线程 tensor 指令，替代 warp 级 MMA，延迟从 32 cycles 降至 11 cycles。</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li><strong>Tensor Memory (TMEM)：</strong>全新的 256KB 专用 Tensor Core 存储，512 列 × 128 lane 的 2D 阵列。读带宽 16 TB/s，写带宽 8 TB/s（每 SM）。缓存未命中延迟降低 58%。</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li><strong>硬件解压引擎：</strong>原生支持 LZ4、Snappy、Zstd、GZIP 解压。</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li><strong>B200</strong>：148 SM，192GB HBM3e。<strong>GB202</strong>：192 SM，24,576 FP32 Core，TSMC N4P。</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li><strong>LLM 性能：</strong>Mistral-7B FP8 推理 78,400 tok/s（1.59x vs H200），FP4 达 112,800 tok/s。</li>
+                                    </ul>
                                 </div>
                             </div>
                             <div class="arch-figure">
@@ -1024,12 +1099,24 @@
                                     <div class="arch-sm-item"><span class="sm-value">50 PF</span><span class="sm-label">FP4 算力</span></div>
                                 </div>
                                 <div class="arch-notes">
-                                    <p><strong>下一代数据中心平台，预计 2026 下半年。</strong></p>
-                                    <p><strong>第 6 代 Tensor Core：</strong>支持 FP4/FP6/FP8/FP16/BF16/TF32/FP32/FP64。<strong>第 3 代 Transformer Engine</strong>：硬件自适应压缩 + 跨层动态精度选择 + 双级微块缩放（NVFP4）。</p>
-                                    <p><strong>HBM4 显存：</strong>288GB，8 个堆叠，带宽 22 TB/s（Blackwell 的 2.8 倍）。</p>
-                                    <p><strong>NVLink 6：</strong>每 GPU 双向 3.6 TB/s（NVLink 5 的 2 倍）。</p>
-                                    <p><strong>FP4 算力：</strong>50 PFLOPS（Blackwell 20 PFLOPS 的 2.5 倍）。</p>
-                                    <p><strong>Vera Rubin NVL72 系统：</strong>72 GPU 聚合 FP4 推理 3,600 PFLOPS，NVLink 聚合带宽 260 TB/s。</p>
+                                    <ul class="arch-list">
+                                    <li><strong>下一代数据中心平台，预计 2026 下半年。</strong></li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li><strong>第 6 代 Tensor Core：</strong>支持 FP4/FP6/FP8/FP16/BF16/TF32/FP32/FP64。<strong>第 3 代 Transformer Engine</strong>：硬件自适应压缩 + 跨层动态精度选择 + 双级微块缩放（NVFP4）。</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li><strong>HBM4 显存：</strong>288GB，8 个堆叠，带宽 22 TB/s（Blackwell 的 2.8 倍）。</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li><strong>NVLink 6：</strong>每 GPU 双向 3.6 TB/s（NVLink 5 的 2 倍）。</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li><strong>FP4 算力：</strong>50 PFLOPS（Blackwell 20 PFLOPS 的 2.5 倍）。</li>
+                                    </ul>
+                                    <ul class="arch-list">
+                                    <li><strong>Vera Rubin NVL72 系统：</strong>72 GPU 聚合 FP4 推理 3,600 PFLOPS，NVLink 聚合带宽 260 TB/s。</li>
+                                    </ul>
                                     <p>TDP 1,800-2,300W。</p>
                                 </div>
                             </div>
@@ -1064,9 +1151,9 @@
                             <tr><td style="text-align:left;font-weight:600">Kepler</td><td>2012</td><td>SMX</td><td>192</td><td>共享</td><td>64</td><td>-</td><td>4</td><td>8</td><td>32</td><td>32</td></tr>
                             <tr><td style="text-align:left;font-weight:600">Maxwell</td><td>2014</td><td>SMM</td><td>128</td><td>共享</td><td>-</td><td>-</td><td>4</td><td>8</td><td>32</td><td>32</td></tr>
                             <tr><td style="text-align:left;font-weight:600">Pascal</td><td>2016</td><td>SM</td><td>64</td><td>共享</td><td>32</td><td>-</td><td>2</td><td>4</td><td>16</td><td>16</td></tr>
-                            <tr><td style="text-align:left;font-weight:600">Volta</td><td>2017</td><td>SM</td><td>64</td><td>64</td><td>32</td><td>8</td><td>4</td><td>4</td><td>32</td><td>16</td></tr>
-                            <tr><td style="text-align:left;font-weight:600">Turing</td><td>2018</td><td>SM</td><td>64</td><td>64</td><td>-</td><td>8</td><td>4</td><td>4</td><td>16</td><td>16</td></tr>
-                            <tr><td style="text-align:left;font-weight:600">Ampere</td><td>2020</td><td>SM</td><td>64</td><td>64</td><td>32</td><td>4</td><td>4</td><td>4</td><td>32</td><td>16</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Volta</td><td>2017</td><td>SM</td><td>64</td><td>64</td><td>32</td><td>8 (1th)</td><td>4</td><td>4</td><td>32</td><td>16</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Turing</td><td>2018</td><td>SM</td><td>64</td><td>64</td><td>-</td><td>8 (2th)</td><td>4</td><td>4</td><td>16</td><td>16</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Ampere</td><td>2020</td><td>SM</td><td>64</td><td>64</td><td>32</td><td>4 (3th)</td><td>4</td><td>4</td><td>32</td><td>16</td></tr>
                             <tr><td style="text-align:left;font-weight:600">Ada</td><td>2022</td><td>SM</td><td>128</td><td>64</td><td>2</td><td>4 (4th)</td><td>4</td><td>4</td><td>32</td><td>16</td></tr>
                             <tr><td style="text-align:left;font-weight:600">Hopper</td><td>2022</td><td>SM</td><td>128</td><td>64</td><td>64</td><td>4 (4th)</td><td>4</td><td>4</td><td>32</td><td>16</td></tr>
                             <tr><td style="text-align:left;font-weight:600">Blackwell</td><td>2024</td><td>SM</td><td>128</td><td>128</td><td>TBD</td><td>4 (5th)</td><td>4</td><td>4</td><td>~32</td><td>~16</td></tr>
