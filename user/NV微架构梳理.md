@@ -1,4 +1,4 @@
-## Nvidia GPGPU 微架构演进对比
+## Nvidia GPGPU 微架构演进
 
 | uArch     | Year | Core  | SM(X/M) | GPC | TPC | INT32+FP32 | INT32/FP32 | INT32 | FP32 | FP64 | Warp. | Disp. | LD/ST | SFU | Tens.Core |
 | -----     | ---- |-------| ------- | --- | --- | ---------- |------------|------ |------|------| ----- | ----- |-------|-----|-----------|
@@ -179,6 +179,7 @@ image: volta_sm.png
 ### 说明
 - **里程碑架构。**
 - **Tensor Core 1.0**：每个 SM 8 个（4 × 2），每个 TC 每周期执行 4×4×4 GEMM（FP16 输入，FP32 累加），等效 64 个 FP32 ALU。
+- **NVLink 2.0**
 - **CUDA Core 拆分**：不再是统一的 FPU+ALU，而是独立的 FP32 Core 和 INT32 Core。优势：**两者可以同时执行**，混合运算吞吐翻倍。
 - **独立线程调度**：每个线程拥有独立 PC 和调用栈
 - Warp Scheduler 变为 1:1 对应 Dispatch Unit（之前是 1:2），并增加 L0 ICache。
@@ -268,6 +269,7 @@ image: ampere_sm.png
 - **Tensor Core 3.0** 
   - 数量从 8 减半到 4，但**每个吞吐量翻 4 倍**，总吞吐翻倍。
   - 数据类型大幅扩展：FP16、BF16、TF32、FP64、INT8、INT4、Binary。
+- **NVLikn 3.0**
 
 ### 存储层次
 - 6 个 HBM2 stack，对应 12 个 512-bit memory controller。
@@ -391,6 +393,7 @@ image: hopper_sm.png
 - **Tensor Memory Accelerator (TMA)：**异步 1D-5D 张量搬运，解放计算线程。
 - **DPX 指令集：**动态规划算法加速（Smith-Waterman 等），最高 13x 提速。
 - **H100 SXM5**：132 SM，16,896 FP32 Core，528 TC，80GB HBM3（3 TB/s），50MB L2，800 亿晶体管，TSMC N4。
+- **NVLink 4.0**
 
 ### 存储层次
 - Shared Memory + L1 扩大至 256KB。
@@ -422,14 +425,10 @@ tags: B100 / B200, FP4 / TMEM
 ### 说明
 **双芯片封装，2080 亿晶体管。**INT32 和 FP32 执行路径统一，INT32 Core 数量与 FP32 持平。
 
-- **第 5 代 Tensor Core：**全新 FP4（e2m1）和 FP6（e3m2 / e2m3）支持。FP4 吞吐 7,702 TFLOPS，FP8 吞吐 3,851 TFLOPS（B200）。引入 `tcgen05.mma` 单线程 tensor 指令，替代 warp 级 MMA，延迟从 32 cycles 降至 11 cycles。
-
+- **Tensor Core 5.0：**全新 FP4（e2m1）和 FP6（e3m2 / e2m3）支持。FP4 吞吐 7,702 TFLOPS，FP8 吞吐 3,851 TFLOPS（B200）。引入 `tcgen05.mma` 单线程 tensor 指令，替代 warp 级 MMA，延迟从 32 cycles 降至 11 cycles。
 - **Tensor Memory (TMEM)：**全新的 256KB 专用 Tensor Core 存储，512 列 × 128 lane 的 2D 阵列。读带宽 16 TB/s，写带宽 8 TB/s（每 SM）。缓存未命中延迟降低 58%。
-
 - **硬件解压引擎：**原生支持 LZ4、Snappy、Zstd、GZIP 解压。
-
 - **B200**：148 SM，192GB HBM3e。**GB202**：192 SM，24,576 FP32 Core，TSMC N4P。
-
 - **LLM 性能：**Mistral-7B FP8 推理 78,400 tok/s（1.59x vs H200），FP4 达 112,800 tok/s。
 
 ---
@@ -446,16 +445,10 @@ tags: R100, HBM4
 
 ### 说明
 - **下一代数据中心平台，预计 2026 下半年。**
-
-- **第 6 代 Tensor Core：**支持 FP4/FP6/FP8/FP16/BF16/TF32/FP32/FP64。**第 3 代 Transformer Engine**：硬件自适应压缩 + 跨层动态精度选择 + 双级微块缩放（NVFP4）。
-
+- **Tensor Core 6.0：**支持 FP4/FP6/FP8/FP16/BF16/TF32/FP32/FP64。
+- **第 3 代 Transformer Engine**：硬件自适应压缩 + 跨层动态精度选择 + 双级微块缩放（NVFP4）。
 - **HBM4 显存：**288GB，8 个堆叠，带宽 22 TB/s（Blackwell 的 2.8 倍）。
-
-- **NVLink 6：**每 GPU 双向 3.6 TB/s（NVLink 5 的 2 倍）。
-
+- **NVLink 6.0：**每 GPU 双向 3.6 TB/s（NVLink 5.0 的 2 倍）。
 - **FP4 算力：**50 PFLOPS（Blackwell 20 PFLOPS 的 2.5 倍）。
-
 - **Vera Rubin NVL72 系统：**72 GPU 聚合 FP4 推理 3,600 PFLOPS，NVLink 聚合带宽 260 TB/s。
-
-TDP 1,800-2,300W。
 
