@@ -455,9 +455,6 @@ html {
     overflow-x: auto;
     width: 100%;
     box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
 .hardware-matrix {
