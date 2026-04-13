@@ -271,7 +271,9 @@ image: ampere_sm.png
 - **Tensor Core 3.0** 
   - 数量从 8 减半到 4，但**每个吞吐量翻 4 倍**，总吞吐翻倍。
   - 数据类型大幅扩展：FP16、BF16、TF32、FP64、INT8、INT4、Binary。
-- **NVLikn 3.0**
+- **NVLink 3.0**
+- 结构性稀疏矩阵
+- **‌Multi-Instance GPU**‌（多实例 GPU，**MIG 1.0**）
 
 ### 存储层次
 - 6 个 HBM2 stack，对应 12 个 512-bit memory controller。
@@ -400,6 +402,7 @@ image: hopper_sm.png
 - **DPX 指令集：**动态规划算法加速（Smith-Waterman 等），最高 13x 提速。
 - **H100 SXM5**：132 SM，16,896 FP32 Core，528 TC，80GB HBM3（3 TB/s），50MB L2，800 亿晶体管，TSMC N4。
 - **NVLink 4.0**
+- **MIG 2.0**
 
 ### 存储层次
 - Shared Memory + L1 扩大至 256KB。
