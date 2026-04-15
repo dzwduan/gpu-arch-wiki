@@ -20,7 +20,7 @@ function initLightbox() {
 
     // 点击图片打开
     document.addEventListener('click', (e) => {
-        const img = e.target.closest('.arch-figure img, .arch-figure-half img, .paper-figure img');
+        const img = e.target.closest('.arch-figure img, .arch-figure-half img, .paper-figure img, .full-width-figure img');
         if (img) {
             lightboxImg.src = img.src;
             lightbox.classList.add('active');

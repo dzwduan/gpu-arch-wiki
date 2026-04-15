@@ -161,8 +161,10 @@ def notes_to_html(body):
             i += 1
             continue
 
-        # 单图: [image: a.png]
+        # 单图: [image: a.png] 或 [full-image: a.png] (全宽显示)
         img1 = re.match(r'^\[image:\s*(.+?)\s*\]$', line)
+        full_img = re.match(r'^\[full-image:\s*(.+?)\s*\]$', line)
+
         if img1:
             if in_list:
                 html_parts.append('</ul>')
@@ -175,7 +177,26 @@ def notes_to_html(body):
                     i += 1
             html_parts.append(
                 f'<div class="paper-figure" style="margin-top:12px">'
-                f'<img src="images/{img1.group(1).strip()}" alt="{caption}" style="max-width:700px">'
+                f'<img src="images/{img1.group(1).strip()}" alt="{caption}" style="max-width:100%; height:auto;">'
+                f'{f"<div class=\"paper-figure-caption\">{caption}</div>" if caption else ""}'
+                f'</div>'
+            )
+            i += 1
+            continue
+        elif full_img:
+            # 全宽图片
+            if in_list:
+                html_parts.append('</ul>')
+                in_list = False
+            caption = ''
+            if i + 1 < len(lines):
+                cap_m = re.match(r'^\[caption:\s*(.+?)\s*\]$', lines[i + 1])
+                if cap_m:
+                    caption = cap_m.group(1).strip()
+                    i += 1
+            html_parts.append(
+                f'<div class="full-width-figure">'
+                f'<img src="images/{full_img.group(1).strip()}" alt="{caption}" style="max-width:100%; height:auto;">'
                 f'{f"<div class=\"paper-figure-caption\">{caption}</div>" if caption else ""}'
                 f'</div>'
             )
@@ -418,56 +439,165 @@ def render_toc(archs, compare_title='微架构演进对比'):
 
 
 def render_compare_table(compare_md):
-    """将 markdown 表格转为 HTML table + 后续注释"""
+    """将 markdown 表格转为 HTML table + 后续注释 + 多个表格和标题支持"""
     lines = [l.strip() for l in compare_md.strip().split('\n') if l.strip()]
-    if len(lines) < 3:
+    if not lines:
         return ''
 
-    # 分离表格和后续注释
-    table_lines = []
-    note_lines = []
-    in_table = True
-    for line in lines:
-        if in_table and line.startswith('|'):
-            table_lines.append(line)
+    # 按类型分组内容
+    all_blocks = []
+    current_block = {'type': 'unknown', 'lines': [], 'content': ''}
+
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+
+        if line.startswith('## '):
+            # 标题块
+            if current_block['lines']:
+                all_blocks.append(current_block)
+            current_block = {'type': 'title', 'lines': [line], 'content': line[3:]}
+        elif line.startswith('|'):
+            # 表格块 - 收集所有连续的 | 行
+            if current_block['type'] != 'table':
+                if current_block['lines']:
+                    all_blocks.append(current_block)
+                current_block = {'type': 'table', 'lines': [], 'content': ''}
+
+            # 收集连续的表格行
+            while i < len(lines) and lines[i].strip().startswith('|'):
+                current_block['lines'].append(lines[i])
+                i += 1
+            continue  # 跳过 i++，因为在循环内已处理
+        elif line.startswith('>'):
+            # 注释块 - 收集所有连续的 > 行
+            if current_block['type'] != 'note':
+                if current_block['lines']:
+                    all_blocks.append(current_block)
+                current_block = {'type': 'note', 'lines': [], 'content': ''}
+
+            # 收集连续的注释行
+            while i < len(lines) and lines[i].strip().startswith('>'):
+                current_block['lines'].append(lines[i])
+                i += 1
+            continue  # 跳过 i++，因为在循环内已处理
+        elif line.startswith('- **') and not line.startswith('---'):  # 避免混淆 --- 和 - **
+            # 列表块 - 收集所有连续的 - ** 行
+            if current_block['type'] != 'list':
+                if current_block['lines']:
+                    all_blocks.append(current_block)
+                current_block = {'type': 'list', 'lines': [], 'content': ''}
+
+            # 收集连续的列表行
+            while i < len(lines) and lines[i].strip().startswith('- **'):
+                current_block['lines'].append(lines[i])
+                i += 1
+            continue  # 跳过 i++，因为在循环内已处理
+        elif line.startswith('### '):
+            # 子标题块
+            if current_block['type'] != 'subtitle':
+                if current_block['lines']:
+                    all_blocks.append(current_block)
+                current_block = {'type': 'subtitle', 'lines': [line], 'content': line[4:]}
+        elif line.startswith('- ') and not line.startswith('---') and current_block.get('type') != 'list':
+            # 非列表项的 - 行作为普通文本
+            if current_block['type'] != 'other':
+                if current_block['lines']:
+                    all_blocks.append(current_block)
+                current_block = {'type': 'other', 'lines': [line], 'content': line}
+            else:
+                current_block['lines'].append(line)
+        elif line == '---':
+            # 跳过分隔符行
+            pass
         else:
-            in_table = False
-            note_lines.append(line)
+            # 其他行
+            if current_block['type'] != 'other' and not line.startswith('---'):
+                if current_block['lines']:
+                    all_blocks.append(current_block)
+                current_block = {'type': 'other', 'lines': [line], 'content': line}
+            elif current_block['type'] == 'other':
+                current_block['lines'].append(line)
 
-    # 渲染表格
-    headers = [c.strip() for c in table_lines[0].split('|') if c.strip()]
-    rows = []
-    for line in table_lines[2:]:  # 跳过分隔线
-        cells = [c.strip() for c in line.split('|') if c.strip()]
-        rows.append(cells)
+        i += 1
 
-    html = '<table class="hardware-matrix">\n'
-    html += '                        <thead>\n                            <tr>\n'
-    for h in headers:
-        html += f'                                <th>{inline_md(h)}</th>\n'
-    html += '                            </tr>\n                        </thead>\n'
-    html += '                        <tbody>\n'
-    for row in rows:
-        html += '                            <tr>'
-        for j, cell in enumerate(row):
-            cell_html = inline_md(cell)
-            if j == 0:
-                html += f'<td style="text-align:left;font-weight:600">{cell_html}</td>'
-            else:
-                html += f'<td>{cell_html}</td>'
-        html += '</tr>\n'
-    html += '                        </tbody>\n                    </table>'
+    if current_block['lines']:
+        all_blocks.append(current_block)
 
-    # 渲染注释（支持 > blockquote）
-    if note_lines:
-        html += '\n                    <div class="table-note" style="margin-top:12px;padding:12px;background:var(--bg-secondary);border-left:3px solid var(--accent-primary);border-radius:6px">\n'
-        for line in note_lines:
-            if line.startswith('>'):
-                content = line[1:].strip()
-                html += f'                        <p style="margin:0;color:var(--text-secondary);font-size:13px">{inline_md(content)}</p>\n'
-            else:
-                html += f'                        <p style="margin:0;color:var(--text-secondary);font-size:13px">{inline_md(line)}</p>\n'
-        html += '                    </div>'
+    html = ''
+    in_container = False  # 跟踪是否在容器中
+
+    for block in all_blocks:
+        if block['type'] == 'title':
+            title = block['lines'][0][3:]  # 去掉 '## '
+            if not in_container:
+                html += '                    <div class="matrix-container">\n'
+                in_container = True
+            html += f'                    <h2 class="subsection-title">{inline_md(title)}</h2>\n'
+        elif block['type'] == 'table':
+            # 渲染表格
+            if not in_container:
+                html += '                    <div class="matrix-container">\n'
+                in_container = True
+            headers = [c.strip() for c in block['lines'][0].split('|') if c.strip()]
+            rows = []
+            for line in block['lines'][2:]:  # 跳过分隔线
+                cells = [c.strip() for c in line.split('|') if c.strip()]
+                rows.append(cells)
+
+            html += '<table class="hardware-matrix">\n'
+            html += '                        <thead>\n                            <tr>\n'
+            for h in headers:
+                html += f'                                <th>{inline_md(h)}</th>\n'
+            html += '                            </tr>\n                        </thead>\n'
+            html += '                        <tbody>\n'
+            for row in rows:
+                html += '                            <tr>'
+                for j, cell in enumerate(row):
+                    cell_html = inline_md(cell)
+                    if j == 0:
+                        html += f'<td style="text-align:left;font-weight:600">{cell_html}</td>'
+                    else:
+                        html += f'<td>{cell_html}</td>'
+                html += '</tr>\n'
+            html += '                        </tbody>\n                    </table>\n'
+        elif block['type'] == 'note':
+            # 渲染注释
+            html += '                    <div class="table-note" style="margin-top:12px;padding:12px;background:var(--bg-secondary);border-left:3px solid var(--accent-primary);border-radius:6px">\n'
+            for line in block['lines']:
+                if line.startswith('>'):
+                    content = line[1:].strip()
+                    html += f'                        <p style="margin:0;color:var(--text-secondary);font-size:13px">{inline_md(content)}</p>\n'
+                else:
+                    html += f'                        <p style="margin:0;color:var(--text-secondary);font-size:13px">{inline_md(line)}</p>\n'
+            html += '                    </div>\n'
+        elif block['type'] == 'list':
+            # 渲染列表
+            if not in_container:
+                html += '                    <div class="matrix-container">\n'
+                in_container = True
+            html += '                    <div class="arch-notes" style="margin-top:24px">\n'
+            for line in block['lines']:
+                content = line[3:].strip()  # 去掉 '- **'
+                html += f'                        <p>{inline_md(content)}</p>\n'
+            html += '                    </div>\n'
+        elif block['type'] == 'subtitle':
+            # 渲染子标题
+            subtitle = block['content']
+            html += f'                    <h3>{inline_md(subtitle)}</h3>\n'
+        elif block['type'] == 'other':
+            # 渲染其他内容
+            if not in_container:
+                html += '                    <div class="matrix-container">\n'
+                in_container = True
+            html += '                    <div class="arch-notes" style="margin-top:12px">\n'
+            for line in block['lines']:
+                html += f'                        <p>{inline_md(line)}</p>\n'
+            html += '                    </div>\n'
+
+    # 关闭容器
+    if in_container:
+        html += '                </div>\n'
 
     return html
 

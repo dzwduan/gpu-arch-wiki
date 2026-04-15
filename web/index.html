@@ -658,7 +658,8 @@
 
                 <h2 class="subsection-title" id="arch-compare">Nvidia GPGPU 微架构演进</h2>
                 <div class="matrix-container">
-                    <table class="hardware-matrix">
+                                        <div class="matrix-container">
+<table class="hardware-matrix">
                         <thead>
                             <tr>
                                 <th>uArch</th>
@@ -685,18 +686,56 @@
                             <tr><td style="text-align:left;font-weight:600">Maxwell</td><td>2014</td><td>GM204</td><td>16</td><td>4</td><td>-</td><td>128</td><td>-</td><td>-</td><td>-</td><td>-</td><td>4</td><td>8</td><td>32</td><td>32</td><td>-</td></tr>
                             <tr><td style="text-align:left;font-weight:600">Pascal</td><td>2016</td><td>GP100</td><td>60</td><td>6</td><td>5</td><td>64</td><td>-</td><td>-</td><td>-</td><td>32</td><td>2</td><td>4</td><td>16</td><td>16</td><td>-</td></tr>
                             <tr><td style="text-align:left;font-weight:600">Volta</td><td>2017</td><td>GV100</td><td>84</td><td>6</td><td>7</td><td>-</td><td>-</td><td>64</td><td>64</td><td>32</td><td>4</td><td>4</td><td>32</td><td>16</td><td>8 (1th)</td></tr>
-                            <tr><td style="text-align:left;font-weight:600">Turing</td><td>2018</td><td>TU102</td><td>72</td><td>6</td><td>6</td><td>-</td><td>-</td><td>64</td><td>64</td><td>2*</td><td>4</td><td>4</td><td>16</td><td>16</td><td>8 (2th)</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Turing</td><td>2018</td><td>TU102</td><td>72</td><td>6</td><td>6</td><td>-</td><td>-</td><td>64</td><td>64</td><td>2</td><td>4</td><td>4</td><td>16</td><td>16</td><td>8 (2th)</td></tr>
                             <tr><td style="text-align:left;font-weight:600">Ampere</td><td>2020</td><td>GA100</td><td>128</td><td>8</td><td>8</td><td>-</td><td>-</td><td>64</td><td>64</td><td>32</td><td>4</td><td>4</td><td>32</td><td>16</td><td>4 (3th)</td></tr>
-                            <tr><td style="text-align:left;font-weight:600">Ampere</td><td>2020</td><td>GA102</td><td>84</td><td>7</td><td>6</td><td>-</td><td>64</td><td>-</td><td>64</td><td>2*</td><td>4</td><td>4</td><td>16</td><td>16</td><td>4 (3th)</td></tr>
-                            <tr><td style="text-align:left;font-weight:600">Ada</td><td>2022</td><td>AD102</td><td>144</td><td>12</td><td>6</td><td>-</td><td>64</td><td>-</td><td>64</td><td>2*</td><td>4</td><td>4</td><td>16</td><td>16</td><td>4 (4th)</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Ampere</td><td>2020</td><td>GA102</td><td>84</td><td>7</td><td>6</td><td>-</td><td>64</td><td>-</td><td>64</td><td>2</td><td>4</td><td>4</td><td>16</td><td>16</td><td>4 (3th)</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Ada</td><td>2022</td><td>AD102</td><td>144</td><td>12</td><td>6</td><td>-</td><td>64</td><td>-</td><td>64</td><td>2</td><td>4</td><td>4</td><td>16</td><td>16</td><td>4 (4th)</td></tr>
                             <tr><td style="text-align:left;font-weight:600">Hopper</td><td>2022</td><td>GH100</td><td>144</td><td>8</td><td>9</td><td>-</td><td>-</td><td>64</td><td>128</td><td>64</td><td>4</td><td>4</td><td>32</td><td>16</td><td>4 (4th)</td></tr>
                             <tr><td style="text-align:left;font-weight:600">Blackwell</td><td>2024</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>4 (5th)</td></tr>
                             <tr><td style="text-align:left;font-weight:600">Rubin</td><td>2026</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>4 (6th)</td></tr>
                         </tbody>
                     </table>
+                    <h2 class="subsection-title">Nvidia 微架构存储层次发展</h2>
+<table class="hardware-matrix">
+                        <thead>
+                            <tr>
+                                <th>uArch</th>
+                                <th>Year</th>
+                                <th>Core</th>
+                                <th>Reg/File</th>
+                                <th>Shared Mem</th>
+                                <th>L1$</th>
+                                <th>L2$</th>
+                                <th>SMEM+L1 Config</th>
+                                <th>Cache Strategy</th>
+                                <th>Memory Interface</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td style="text-align:left;font-weight:600">Tesla</td><td>2006</td><td>G80</td><td>8KB</td><td>16KB</td><td>-</td><td>-</td><td>-</td><td>-</td><td>GDDR3</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Fermi</td><td>2010</td><td>GF100</td><td>32KB</td><td>48KB</td><td>16KB</td><td>768KB</td><td>Configurable</td><td>Write-Back</td><td>GDDR5</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Kepler</td><td>2012</td><td>GK110</td><td>64KB</td><td>64KB</td><td>64KB</td><td>1.5MB</td><td>Configurable</td><td>Write-Back</td><td>GDDR5</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Maxwell</td><td>2014</td><td>GM204</td><td>64KB</td><td>96KB</td><td>32KB</td><td>2MB</td><td>Fixed Split</td><td>Write-Through</td><td>GDDR5</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Pascal</td><td>2016</td><td>GP102</td><td>64KB</td><td>64/96KB</td><td>32KB</td><td>2MB</td><td>Fixed Split</td><td>Write-Through</td><td>GDDR5X</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Volta</td><td>2017</td><td>GV100</td><td>64KB</td><td>96KB</td><td>128KB</td><td>6MB</td><td>Fixed Split</td><td>Write-Through</td><td>HBM2</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Turing</td><td>2018</td><td>TU102</td><td>64KB</td><td>64KB</td><td>4KB</td><td>5.5MB</td><td>Fixed Split</td><td>Write-Through</td><td>GDDR6</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Ampere</td><td>2020</td><td>GA102</td><td>64KB</td><td>164KB</td><td>-</td><td>40MB</td><td>128KB Shared</td><td>-</td><td>GDDR6X/HBM2e</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Ada</td><td>2022</td><td>AD102</td><td>64KB</td><td>99KB</td><td>-</td><td>50MB</td><td>128KB Shared</td><td>-</td><td>GDDR6X</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Hopper</td><td>2022</td><td>GH100</td><td>64KB</td><td>256KB</td><td>-</td><td>50MB</td><td>256KB Shared</td><td>-</td><td>HBM3</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Blackwell</td><td>2024</td><td>GB200</td><td>64KB</td><td>228KB</td><td>-</td><td>140MB</td><td>228KB Shared</td><td>-</td><td>HBM3e</td></tr>
+                            <tr><td style="text-align:left;font-weight:600">Rubin</td><td>2026</td><td>TBD</td><td>TBD</td><td>TBD</td><td>-</td><td>TBD</td><td>TBD</td><td>-</td><td>HBM4</td></tr>
+                        </tbody>
+                    </table>
                     <div class="table-note" style="margin-top:12px;padding:12px;background:var(--bg-secondary);border-left:3px solid var(--accent-primary);border-radius:6px">
-                        <p style="margin:0;color:var(--text-secondary);font-size:13px">标注 <strong><code>*</code></strong> 的 FP64 值的微架构核心用于消费级游戏卡（TU102, GA102, AD102），SM 中的 2 个 FP64 CUDA Core 一般处于屏蔽/禁用状态。</p>
+                        <p style="margin:0;color:var(--text-secondary);font-size:13px"><strong>注：</strong> Shared Memory / L1 Cache 大小在不同架构中有不同的配置策略。存储层次结构说明：<br/></p>
+                        <p style="margin:0;color:var(--text-secondary);font-size:13px">- <strong>Register File (寄存器文件)</strong>: 每个 SM 内部的高速存储，供线程使用<br/></p>
+                        <p style="margin:0;color:var(--text-secondary);font-size:13px">- <strong>Shared Memory (共享内存)</strong>: 每个 SM 内部，供该 SM 内所有线程块共享<br/></p>
+                        <p style="margin:0;color:var(--text-secondary);font-size:13px">- <strong>L1$ (L1缓存)</strong>: 每个 SM 级别的缓存<br/></p>
+                        <p style="margin:0;color:var(--text-secondary);font-size:13px">- <strong>L2$ (L2缓存)</strong>: 芯片全局缓存，所有 SM 共享<br/></p>
+                        <p style="margin:0;color:var(--text-secondary);font-size:13px">- <strong>Memory Interface (内存接口)</strong>: 连接到外部 GDDR/HBM 内存</p>
                     </div>
+                </div>
+
                 </div>
 
                 <div class="page-toc" style="margin-top:24px">
@@ -749,7 +788,7 @@
                             </div>
                         </div>
 
-                        <h3 class="arch-sub-title">Fermi 存储层次</h3>
+                        <h3 class="arch-sub-title">Fermi 规模+存储层次</h3>
                         <div class="arch-notes" style="margin-top:12px">
                             <ul class="arch-list">
                                     <li>Fermi 架构引入了 L1 和 L2 数据缓存。</li>
@@ -801,13 +840,14 @@
                                 </div>
                             </div>
                             <div class="arch-figure">
-                                <img src="images/kepler_sm.png" alt="Kepler 架构图">
+                                <img src="images/gk210_sm.png" alt="Kepler 架构图">
                             </div>
                         </div>
 
-                        <h3 class="arch-sub-title">Kepler 存储层次</h3>
+                        <h3 class="arch-sub-title">Kepler 规模+存储层次 (GK210)</h3>
                         <div class="arch-notes" style="margin-top:12px">
-                            <ul class="arch-list">
+                            <div class="full-width-figure"><img src="images/gk210_full.png" alt="" style="max-width:100%; height:auto;"></div>
+                                    <ul class="arch-list">
                                     <li>Kepler 引入了一个额外的 48KB 只读 Data Cache，用于保存只读的数据，可以提供相比 Shared/L1 cache 更高的性能。</li>
                                     <li>根据 <a href="https://arxiv.org/pdf/1804.06826.pdf" target="_blank">Dissecting the NVIDIA Volta GPU Architecture via Microbenchmarking</a>，Kepler 架构每个周期每个 SM 可以读取 256 字节的数据，也就是说，每个 LD/ST unit 每周期可以读取 4 字节的数据。</li>
                                     </ul>
@@ -854,9 +894,10 @@
                             </div>
                         </div>
 
-                        <h3 class="arch-sub-title">Maxwell 存储层次</h3>
+                        <h3 class="arch-sub-title">Maxwell 规模+存储层次 (gm204，最大规模芯片 gm200 无官方文档)</h3>
                         <div class="arch-notes" style="margin-top:12px">
-                            <ul class="arch-list">
+                            <div class="full-width-figure"><img src="images/gm204_full.png" alt="" style="max-width:100%; height:auto;"></div>
+                                    <ul class="arch-list">
                                     <li>Maxwell 架构的 L1 缓存和 Shared Memory 不再共享，Shared Memory 独占 96KB，然后 L1 缓存和 Texture 缓存共享空间。</li>
                                     <li>根据 <a href="https://arxiv.org/pdf/1804.06826.pdf" target="_blank">Dissecting the NVIDIA Volta GPU Architecture via Microbenchmarking</a>，Maxwell 架构每个周期每个 SM 可以读取 256 字节的数据，也就是说，每个 LD/ST unit 每周期可以读取 4 字节的数据。</li>
                                     </ul>
@@ -903,13 +944,14 @@
                                 </div>
                             </div>
                             <div class="arch-figure">
-                                <img src="images/pascal_sm.png" alt="Pascal 架构图">
+                                <img src="images/gp100_sm.png" alt="Pascal 架构图">
                             </div>
                         </div>
 
-                        <h3 class="arch-sub-title">Pascal 存储层次</h3>
+                        <h3 class="arch-sub-title">Pascal 规模+存储层次 (GP100)</h3>
                         <div class="arch-notes" style="margin-top:12px">
-                            <ul class="arch-list">
+                            <div class="full-width-figure"><img src="images/gp100_full.png" alt="" style="max-width:100%; height:auto;"></div>
+                                    <ul class="arch-list">
                                     <li>支持 Unified Memory，使得 CPU 和 GPU 可以共享虚拟地址空间，让数据自动进行迁移。</li>
                                     <li>8 个 512 位的内存控制器，每个内存控制器附带 512 KB L2 缓存，总共有 4096 KB 的 L2 缓存。</li>
                                     <li>每两个内存控制器为一组，连接到 4 个 1024 位的 HBM2 内存。</li>
@@ -920,8 +962,8 @@
 
 
                         <h3 class="arch-sub-title">Pascal SM 微架构图</h3>
-                        <div class="paper-figure" style="margin-top:12px">
-                            <img src="images/pascal_sm_arch.png" alt="" style="max-width:700px">
+                        <div class="arch-notes" style="margin-top:12px">
+                            <div class="full-width-figure"><img src="images/pascal_sm_arch.png" alt="" style="max-width:100%; height:auto;"></div>
                         </div>
 
 
@@ -967,13 +1009,14 @@
                                 </div>
                             </div>
                             <div class="arch-figure">
-                                <img src="images/volta_sm.png" alt="Volta 架构图">
+                                <img src="images/gv100_sm.png" alt="Volta 架构图">
                             </div>
                         </div>
 
-                        <h3 class="arch-sub-title">Volta 存储层次</h3>
+                        <h3 class="arch-sub-title">Volta 规模+存储层次 (GV100)</h3>
                         <div class="arch-notes" style="margin-top:12px">
-                            <ul class="arch-list">
+                            <div class="full-width-figure"><img src="images/gv100_full.png" alt="" style="max-width:100%; height:auto;"></div>
+                                    <ul class="arch-list">
                                     <li>在 Volta 架构中，L1 Data Cache 和 Shared memory 再次共享。</li>
                                     <li>引入了 L0 Instruction Cache，每个 Processing Block 内部都有一个。</li>
                                     <li>8 个 512 位的内存控制器。</li>
@@ -1042,13 +1085,14 @@
                                 </div>
                             </div>
                             <div class="arch-figure">
-                                <img src="images/turing_sm.png" alt="Turing 架构图">
+                                <img src="images/tu102_sm.png" alt="Turing 架构图">
                             </div>
                         </div>
 
-                        <h3 class="arch-sub-title">Turing 存储层次</h3>
+                        <h3 class="arch-sub-title">Turing 规模+存储层次 (TU102)</h3>
                         <div class="arch-notes" style="margin-top:12px">
-                            <ul class="arch-list">
+                            <div class="full-width-figure"><img src="images/tu102_full.png" alt="" style="max-width:100%; height:auto;"></div>
+                                    <ul class="arch-list">
                                     <li>12 个 32-bit GDDR6 memory controller</li>
                                     <li>Turing 架构的每 TPC 的 L1 带宽是 Pascal 架构的两倍。</li>
                                     </ul>
@@ -1056,8 +1100,8 @@
 
 
                         <h3 class="arch-sub-title">Turing SM 微架构图</h3>
-                        <div class="paper-figure" style="margin-top:12px">
-                            <img src="images/turing_sm_arch.png" alt="" style="max-width:700px">
+                        <div class="arch-notes" style="margin-top:12px">
+                            <div class="full-width-figure"><img src="images/turing_sm_arch.png" alt="" style="max-width:100%; height:auto;"></div>
                         </div>
 
 
@@ -1105,13 +1149,14 @@
                                 </div>
                             </div>
                             <div class="arch-figure">
-                                <img src="images/ampere_sm.png" alt="Ampere (GA100) 架构图">
+                                <img src="images/ga100_sm.png" alt="Ampere (GA100) 架构图">
                             </div>
                         </div>
 
-                        <h3 class="arch-sub-title">Ampere (GA100) 存储层次</h3>
+                        <h3 class="arch-sub-title">Ampere (GA100) 规模+存储层次</h3>
                         <div class="arch-notes" style="margin-top:12px">
-                            <ul class="arch-list">
+                            <div class="full-width-figure"><img src="images/ga100_full.png" alt="" style="max-width:100%; height:auto;"></div>
+                                    <ul class="arch-list">
                                     <li>6 个 HBM2 stack，对应 12 个 512-bit memory controller。</li>
                                     <li>每个 SM 的 L1 Data Cache/Shared Memory 总量增加到了 192 KB。</li>
                                     <li>A100 GPU 有 40 MB 的 L2 缓存，分为两个 partition。</li>
@@ -1127,8 +1172,8 @@
 
 
                         <h3 class="arch-sub-title">Ampere (GA100) A100 vs V100 性能提升</h3>
-                        <div class="paper-figure" style="margin-top:12px">
-                            <img src="images/a100_vs_v100.png" alt="" style="max-width:700px">
+                        <div class="arch-notes" style="margin-top:12px">
+                            <div class="full-width-figure"><img src="images/a100_vs_v100.png" alt="" style="max-width:100%; height:auto;"></div>
                         </div>
 
 
@@ -1169,13 +1214,14 @@
                                 </div>
                             </div>
                             <div class="arch-figure">
-                                <img src="images/a-ga102_sm.png" alt="Ampere (GA102) 架构图">
+                                <img src="images/ga102_sm.png" alt="Ampere (GA102) 架构图">
                             </div>
                         </div>
 
-                        <h3 class="arch-sub-title">Ampere (GA102) 存储层次</h3>
+                        <h3 class="arch-sub-title">Ampere (GA102) 规模+存储层次</h3>
                         <div class="arch-notes" style="margin-top:12px">
-                            <ul class="arch-list">
+                            <div class="full-width-figure"><img src="images/ga102_full.png" alt="" style="max-width:100%; height:auto;"></div>
+                                    <ul class="arch-list">
                                     <li>12 个 32-bit memory controller，一共 384 位。</li>
                                     <li>12 组 512KB 的 L2 缓存，每组对应一个内存控制器，L2 一共是 6144 KB。</li>
                                     <li>GA102 的 shared memory 带宽是每个 SM 每个时钟 128 字节，而 Turing 架构的这个值是 64。</li>
@@ -1186,8 +1232,8 @@
 
 
                         <h3 class="arch-sub-title">Ampere (GA102) SM 微架构图</h3>
-                        <div class="paper-figure" style="margin-top:12px">
-                            <img src="images/GA102_sm.png" alt="" style="max-width:700px">
+                        <div class="arch-notes" style="margin-top:12px">
+                            <div class="full-width-figure"><img src="images/1-GA102_sm.png" alt="" style="max-width:100%; height:auto;"></div>
                         </div>
 
 
@@ -1230,13 +1276,14 @@
                                 </div>
                             </div>
                             <div class="arch-figure">
-                                <img src="images/ada_sm.png" alt="Ada Lovelace 架构图">
+                                <img src="images/ad102_sm.png" alt="Ada Lovelace 架构图">
                             </div>
                         </div>
 
-                        <h3 class="arch-sub-title">Ada Lovelace 存储层次</h3>
+                        <h3 class="arch-sub-title">Ada Lovelace 规模+存储层次 (AD102)</h3>
                         <div class="arch-notes" style="margin-top:12px">
-                            <ul class="arch-list">
+                            <div class="full-width-figure"><img src="images/ad102-full.png" alt="" style="max-width:100%; height:auto;"></div>
+                                    <ul class="arch-list">
                                     <li>12 个 32-bit memory controller，一共 384 位。</li>
                                     <li><strong>L2 缓存大幅扩容：</strong>，AD102 达 96MB（Ampere GA102 仅 6MB，16x 增长），显著减少显存访问。</li>
                                     </ul>
@@ -1294,13 +1341,14 @@
                                 </div>
                             </div>
                             <div class="arch-figure">
-                                <img src="images/hopper_sm.png" alt="Hopper 架构图">
+                                <img src="images/gh100_sm.png" alt="Hopper 架构图">
                             </div>
                         </div>
 
-                        <h3 class="arch-sub-title">Hopper 存储层次</h3>
+                        <h3 class="arch-sub-title">Hopper 规模+存储层次 (GH100)</h3>
                         <div class="arch-notes" style="margin-top:12px">
-                            <ul class="arch-list">
+                            <div class="full-width-figure"><img src="images/gh100-full.png" alt="" style="max-width:100%; height:auto;"></div>
+                                    <ul class="arch-list">
                                     <li>Shared Memory + L1 扩大至 256KB。</li>
                                     <li>HBM3 DRAM，5 个 stack，10 个 512-bit memory controller，总共 80 GB 容量。（H100 SXM5 参数）</li>
                                     <li>完整版的 GH100 芯片有 60MB 的 L2 缓存，H100 有 50MB 的 L2 缓存。</li>
@@ -1357,7 +1405,7 @@
                                 </div>
                             </div>
                             <div class="arch-figure">
-                                <div class="arch-figure-placeholder">Blackwell SM 架构图<br>(待补充)</div>
+                                <img src="images/gb202_sm.png" alt="Blackwell 架构图">
                             </div>
                         </div>
                     </div>
